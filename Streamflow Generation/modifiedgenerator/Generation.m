@@ -5,14 +5,17 @@ clc
 path_read = './';
 
 % load multi-site observations of daily streamflow
-Qmonthly = readmatrix('Qmonthly_CA+LA.xlsx');
-% column 1 is colorado, 2 is riogrande, 3 is California, 4 is LA, 5 is
-% CA+LA%% preprocess data 
+Qmonthly = readmatrix('Qmonthly.csv');
+
+% column 1 is California, 2 is Colorado, 3 is Rio Grande
+
+%% preprocess data 
 
 % make normally distributed evaporation log-normal like flows
 % (monthly_gen.m takes the log of Qmonthly to make all columns normally
 % distributed)
-sites = {'qColorado', 'qRiograde', 'qCA', 'qLACA'};
+
+sites = {'qLA', 'qCO', 'qRG'};
 Nyears = size(Qmonthly,1)/12;
 Nsites = size(Qmonthly,2);
 
@@ -23,18 +26,18 @@ Qcells = cell(1, Nsites);
 
 % Split and reshape data
 for i = 1:Nsites
-    Qcells{i} = reshape(Qmonthly(:,i), 12, Nyears)'; % Transpose to 20×12
+    Qcells{i} = reshape(Qmonthly(:,i), 12, Nyears)'; % Transpose to 10×12
 end
 
 Qmonthly=Qcells;
 
 %% Kirsch + Nowak generation
 
-% 1000 realizations of 20 years
-% and then 100 realizations of 100 year
-num_realizations = [100, 10];
-num_years = [20, 20];
-dimensions = {'-100x20','-10x100'};
+% 100 realizations of 10 years
+
+num_realizations = [100];
+num_years = [10];
+dimensions = {'-100x10'};
 
 %% 
 
