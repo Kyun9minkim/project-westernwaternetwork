@@ -6,46 +6,46 @@ clear all;
 
 %% read data-original historical
 
-Qhistorical = readmatrix('./modifiedgenerator/Qmonthly_CA+LA.xlsx');
-Qconsumptive = readmatrix('./consumptive.xlsx');
+Qhistorical = readmatrix('./modifiedgenerator/Qmonthly.csv');
 
-histCO=Qhistorical(:,1);
-histRG=Qhistorical(:,2);
-histCALA=Qhistorical(:,3);
+histCA=Qhistorical(:,1);
+histCO=Qhistorical(:,2);
+histRG=Qhistorical(:,3);
 
 %% read data-generated
 
-qCO=readmatrix("synthetic/qColorado-100x20-monthly.csv");
+qCA=readmatrix("./modifiedgenerator/synthetic/qCA-100x10-monthly.csv");
+qCA = qCA';
+qCO=readmatrix("./modifiedgenerator/synthetic/qCO-100x10-monthly.csv");
 qCO = qCO';
-qRG=readmatrix("synthetic/qRiograde-100x20-monthly.csv");
+qRG=readmatrix("./modifiedgenerator/synthetic/qRG-100x10-monthly.csv");
 qRG = qRG';
-qCALA=readmatrix("synthetic/qCALA-100x20-monthly.csv");
-qCALA = qCALA';
+
 
 %% bootstrap
 
 B = 100; % 부트스트랩 샘플 개수
-years = 20; % 20년치 데이터
+years = 10; % 20년치 데이터
 
+boot_histCA = yearly_bootstrap(histCA, B, years);
 boot_histCO = yearly_bootstrap(histCO, B, years);
 boot_histRG = yearly_bootstrap(histRG, B, years);
-boot_histCALA = yearly_bootstrap(histCALA, B, years);
 
 %% transpose bootstraped data
 
+boot_histCA = boot_histCA';
 boot_histCO = boot_histCO';
 boot_histRG = boot_histRG';
-boot_histCALA = boot_histCALA';
 
 %% 위치별 데이터 설정
 
-locations = {'CO', 'RG', 'CALA'};
+locations = {'CA', 'CO', 'RG'};
 
-% 히스토리컬 데이터 (각각 240×100 행렬)
-hist_data = {boot_histCO, boot_histRG, boot_histCALA};
+% 히스토리컬 데이터 (각각 120×100 행렬)
+hist_data = {boot_histCA, boot_histCO, boot_histRG};
 
 % 생성 데이터 (각각 예를 들어 20×100 행렬)
-gen_data = {qCO, qRG, qCALA};
+gen_data = {qCA, qCO, qRG};
 
 %% 서브플롯으로 각 위치의 Flow Duration Curve 플로팅
 figure;

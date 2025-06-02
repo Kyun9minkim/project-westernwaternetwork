@@ -15,7 +15,7 @@ Qmonthly = readmatrix('Qmonthly.csv');
 % (monthly_gen.m takes the log of Qmonthly to make all columns normally
 % distributed)
 
-sites = {'qLA', 'qCO', 'qRG'};
+sites = {'qCA', 'qCO', 'qRG'};
 Nyears = size(Qmonthly,1)/12;
 Nsites = size(Qmonthly,2);
 
