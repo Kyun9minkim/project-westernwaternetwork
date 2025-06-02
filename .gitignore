@@ -1,0 +1,13 @@
+# MATLAB 
+*.asv
+*.fig
+*.mex*
+*.mat
+*.log
+
+# OS 
+.DS_Store
+
+# personal setting
+*.ini
+*.bak
