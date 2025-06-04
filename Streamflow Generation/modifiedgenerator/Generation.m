@@ -35,8 +35,8 @@ Qmonthly=Qcells;
 
 % 100 realizations of 10 years
 
-num_realizations = [100];
-num_years = [10];
+num_realizations = 100;
+num_years = 10;
 dimensions = {'-100x10'};
 
 %% 
