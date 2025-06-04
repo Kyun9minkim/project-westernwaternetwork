@@ -5,6 +5,11 @@
 *.mat
 *.log
 
+#R
+.Rhistory
+.RData
+
+
 # OS 
 .DS_Store
 

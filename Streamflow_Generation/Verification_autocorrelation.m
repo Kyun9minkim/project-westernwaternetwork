@@ -99,7 +99,6 @@ stairs(0:max_lag, acf_ci_lower, 'k--', 'LineWidth', 1.5, 'DisplayName', '95% CI 
 stairs(0:max_lag, acf_ci_upper, 'k--', 'LineWidth', 1.5, 'DisplayName', '95% CI Upper');
 
 % 그래프 설정
-xlabel('Lag (months)');
 ylabel('Autocorrelation');
 title('CA Aqueduct Autocorrelation');
 xlim([0 max_lag]); % x축을 0부터 12까지 설정
@@ -213,6 +212,7 @@ stairs(0:max_lag, acf_ci_lower, 'k--', 'LineWidth', 1.5, 'DisplayName', '95% CI 
 stairs(0:max_lag, acf_ci_upper, 'k--', 'LineWidth', 1.5, 'DisplayName', '95% CI Upper');
 
 % 그래프 설정
+xlabel('Lag (months)');
 ylabel('Autocorrelation');
 title('RG Aqueduct Autocorrelation');
 xlim([0 max_lag]); % x축을 0부터 12까지 설정
