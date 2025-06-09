@@ -14,17 +14,17 @@ histCA=Qhistorical(:,3);
 
 %% read data-generated
 
-qCA=readmatrix("./modifiedgenerator/synthetic/qCA-100x10-monthly.csv");
+qCA=readmatrix("./modifiedgenerator/synthetic/qCA-100x20-monthly.csv");
 qCA = qCA';
-qCO=readmatrix("./modifiedgenerator/synthetic/qCO-100x10-monthly.csv");
+qCO=readmatrix("./modifiedgenerator/synthetic/qCO-100x20-monthly.csv");
 qCO = qCO';
-qRG=readmatrix("./modifiedgenerator/synthetic/qRG-100x10-monthly.csv");
+qRG=readmatrix("./modifiedgenerator/synthetic/qRG-100x20-monthly.csv");
 qRG = qRG';
 
 %% bootstrap
 
 B = 100; % 부트스트랩 샘플 개수
-years = 10; % 20년치 데이터
+years = 20; % 20년치 데이터
 
 boot_histCA = yearly_bootstrap(histCA, B, years);
 boot_histCO = yearly_bootstrap(histCO, B, years);
@@ -38,13 +38,13 @@ boot_histRG = boot_histRG';
 
 %% box plot preparation
 
-histCA_monthly = reshape(boot_histCA, 12, 10, 100);
-histCO_monthly = reshape(boot_histCO, 12, 10, 100);
-histRG_monthly = reshape(boot_histRG, 12, 10, 100);
+histCA_monthly = reshape(boot_histCA, 12, 20, 100);
+histCO_monthly = reshape(boot_histCO, 12, 20, 100);
+histRG_monthly = reshape(boot_histRG, 12, 20, 100);
 
-qCA_monthly = reshape(qCA, 12, 10, 100);
-qCO_monthly = reshape(qCO, 12, 10, 100);
-qRG_monthly = reshape(qRG, 12, 10, 100);
+qCA_monthly = reshape(qCA, 12, 20, 100);
+qCO_monthly = reshape(qCO, 12, 20, 100);
+qRG_monthly = reshape(qRG, 12, 20, 100);
 
 %% 
 set(0, 'DefaultFigurePosition', [100, 100, 1600, 400]); % 모든 figure 크기 설정
@@ -55,20 +55,20 @@ figure(1);
 
 subplot(3,1,1);
 max_lag = 12; % 최대 시차 (Lag 0~12)
-num_years = 10; % 20년 데이터 존재
+num_years = 20; % 20년 데이터 존재
 
-% 1️⃣ 히스토리컬 데이터의 전체 시계열 만들기 (120개월 데이터)
-hist_full_series = reshape(histCA_monthly, [12*num_years, 100]); % (120 x 100)
-qCA_full_series = reshape(qCA_monthly, [12*num_years, 100]); % (120 x 100)
+% 1️⃣ 히스토리컬 데이터의 전체 시계열 만들기 (240개월 데이터)
+hist_full_series = reshape(histCA_monthly, [12*num_years, 100]); % (240 x 100)
+qCA_full_series = reshape(qCA_monthly, [12*num_years, 100]); % (240 x 100)
 
 % ACF 저장 공간
 acf_hist_all = zeros(100, max_lag+1);
 acf_qCA_all = zeros(100, max_lag+1);
 
-% 2️⃣ 100개 샘플 각각에 대해 전체 10년(120개월) 시계열로 ACF 계산
+% 2️⃣ 100개 샘플 각각에 대해 전체 10년(240개월) 시계열로 ACF 계산
 for i = 1:100
-    hist_sample = hist_full_series(:, i); % i번째 히스토리컬 샘플 (120x1)
-    qCA_sample = qCA_full_series(:, i); % i번째 시뮬레이션 샘플 (120x1)
+    hist_sample = hist_full_series(:, i); % i번째 히스토리컬 샘플 (240x1)
+    qCA_sample = qCA_full_series(:, i); % i번째 시뮬레이션 샘플 (240x1)
     
     % 자기상관 계산 (Lag 0~12)
     [acf_hist, lags] = xcorr(hist_sample, max_lag, 'coeff');
@@ -112,20 +112,20 @@ hold off;
 
 subplot(3,1,2);
 max_lag = 12; % 최대 시차 (Lag 0~12)
-num_years = 10; % 10년 데이터 존재
+num_years = 20; % 10년 데이터 존재
 
-% 1️⃣ 히스토리컬 데이터의 전체 시계열 만들기 (120개월 데이터)
-hist_full_series = reshape(histCO_monthly, [12*num_years, 100]); % (120 x 100)
-qCO_full_series = reshape(qCO_monthly, [12*num_years, 100]); % (120 x 100)
+% 1️⃣ 히스토리컬 데이터의 전체 시계열 만들기 (240개월 데이터)
+hist_full_series = reshape(histCO_monthly, [12*num_years, 100]); % (240 x 100)
+qCO_full_series = reshape(qCO_monthly, [12*num_years, 100]); % (240 x 100)
 
 % ACF 저장 공간
 acf_hist_all = zeros(100, max_lag+1);
 acf_qCO_all = zeros(100, max_lag+1);
 
-% 2️⃣ 100개 샘플 각각에 대해 전체 10년(120개월) 시계열로 ACF 계산
+% 2️⃣ 100개 샘플 각각에 대해 전체 10년(240개월) 시계열로 ACF 계산
 for i = 1:100
-    hist_sample = hist_full_series(:, i); % i번째 히스토리컬 샘플 (120x1)
-    qCO_sample = qCO_full_series(:, i); % i번째 시뮬레이션 샘플 (120x1)
+    hist_sample = hist_full_series(:, i); % i번째 히스토리컬 샘플 (240x1)
+    qCO_sample = qCO_full_series(:, i); % i번째 시뮬레이션 샘플 (240x1)
     
     % 자기상관 계산 (Lag 0~12)
     [acf_hist, lags] = xcorr(hist_sample, max_lag, 'coeff');
@@ -168,17 +168,17 @@ hold off;
 
 subplot(3,1,3);
 max_lag = 12; % 최대 시차 (Lag 0~12)
-num_years = 10; % 20년 데이터 존재
+num_years = 20; % 20년 데이터 존재
 
-% 1️⃣ 히스토리컬 데이터의 전체 시계열 만들기 (120개월 데이터)
-hist_full_series = reshape(histRG_monthly, [12*num_years, 100]); % (120 x 100)
-qRG_full_series = reshape(qRG_monthly, [12*num_years, 100]); % (120 x 100)
+% 1️⃣ 히스토리컬 데이터의 전체 시계열 만들기 (240개월 데이터)
+hist_full_series = reshape(histRG_monthly, [12*num_years, 100]); % (240 x 100)
+qRG_full_series = reshape(qRG_monthly, [12*num_years, 100]); % (240 x 100)
 
 % ACF 저장 공간
 acf_hist_all = zeros(100, max_lag+1);
 acf_qRG_all = zeros(100, max_lag+1);
 
-% 2️⃣ 100개 샘플 각각에 대해 전체 10년(120개월) 시계열로 ACF 계산
+% 2️⃣ 100개 샘플 각각에 대해 전체 10년(240개월) 시계열로 ACF 계산
 for i = 1:100
     hist_sample = hist_full_series(:, i); % i번째 히스토리컬 샘플 (240x1)
     qRG_sample = qRG_full_series(:, i); % i번째 시뮬레이션 샘플 (240x1)

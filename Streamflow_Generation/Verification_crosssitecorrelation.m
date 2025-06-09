@@ -14,17 +14,17 @@ histCA=Qhistorical(:,3);
 
 %% read data-generated
 
-qCA=readmatrix("./modifiedgenerator/synthetic/qCA-100x10-monthly.csv");
+qCA=readmatrix("./modifiedgenerator/synthetic/qCA-100x20-monthly.csv");
 qCA = qCA';
-qCO=readmatrix("./modifiedgenerator/synthetic/qCO-100x10-monthly.csv");
+qCO=readmatrix("./modifiedgenerator/synthetic/qCO-100x20-monthly.csv");
 qCO = qCO';
-qRG=readmatrix("./modifiedgenerator/synthetic/qRG-100x10-monthly.csv");
+qRG=readmatrix("./modifiedgenerator/synthetic/qRG-100x20-monthly.csv");
 qRG = qRG';
 
 %% bootstrap
 
 B = 100; % 부트스트랩 샘플 개수
-years = 10; % 20년치 데이터
+years = 20; % 20년치 데이터
 
 boot_histCA = yearly_bootstrap(histCA, B, years);
 boot_histCO = yearly_bootstrap(histCO, B, years);
@@ -38,26 +38,26 @@ boot_histRG = boot_histRG';
 
 %% box plot preparation
 
-histCA_monthly = reshape(boot_histCA, 12, 10, 100);
-histCO_monthly = reshape(boot_histCO, 12, 10, 100);
-histRG_monthly = reshape(boot_histRG, 12, 10, 100);
+histCA_monthly = reshape(boot_histCA, 12, 20, 100);
+histCO_monthly = reshape(boot_histCO, 12, 20, 100);
+histRG_monthly = reshape(boot_histRG, 12, 20, 100);
 
-qCA_monthly = reshape(qCA, 12, 10, 100);
-qCO_monthly = reshape(qCO, 12, 10, 100);
-qRG_monthly = reshape(qRG, 12, 10, 100);
+qCA_monthly = reshape(qCA, 12, 20, 100);
+qCO_monthly = reshape(qCO, 12, 20, 100);
+qRG_monthly = reshape(qRG, 12, 20, 100);
 
 %% 
 
-num_years = 10; % 10년 데이터 존재
+num_years = 20; % 20년 데이터 존재
 
-% 1️⃣ 히스토리컬 데이터의 전체 시계열 만들기 (120개월 데이터)
-histCA_series = reshape(histCA_monthly, [12*num_years, 100]); % (120 x 100)
-histCO_series = reshape(histCO_monthly, [12*num_years, 100]); % (120 x 100)
-histRG_series = reshape(histRG_monthly, [12*num_years, 100]); % (120 x 100)
+% 1️⃣ 히스토리컬 데이터의 전체 시계열 만들기 (240개월 데이터)
+histCA_series = reshape(histCA_monthly, [12*num_years, 100]); % (240 x 100)
+histCO_series = reshape(histCO_monthly, [12*num_years, 100]); % (240 x 100)
+histRG_series = reshape(histRG_monthly, [12*num_years, 100]); % (240 x 100)
 
-qCA_series = reshape(qCA_monthly, [12*num_years, 100]); % (120 x 100)
-qCO_series = reshape(qCO_monthly, [12*num_years, 100]); % (120 x 100)
-qRG_series = reshape(qRG_monthly, [12*num_years, 100]); % (120 x 100)
+qCA_series = reshape(qCA_monthly, [12*num_years, 100]); % (240 x 100)
+qCO_series = reshape(qCO_monthly, [12*num_years, 100]); % (240 x 100)
+qRG_series = reshape(qRG_monthly, [12*num_years, 100]); % (240 x 100)
 
 % 2️⃣ Pairwise Cross-Correlation 저장 공간
 pairs = {'CO-RG', 'CO-CA', 'RG-CA'};

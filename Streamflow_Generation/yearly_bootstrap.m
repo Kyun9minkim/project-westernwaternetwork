@@ -1,5 +1,5 @@
 function boot_data = yearly_bootstrap(data, B, years)
-    % data: 부트스트랩할 시계열 데이터 (120 × 1)
+    % data: 부트스트랩할 시계열 데이터 (240 × 1)
     % B: 샘플 개수 (100)
     % years: 연 단위 데이터 개수 (10년)
     % boot_data: 부트스트랩된 데이터 (B × 120)

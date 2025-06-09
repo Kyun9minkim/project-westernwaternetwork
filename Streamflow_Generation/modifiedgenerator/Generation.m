@@ -1,4 +1,4 @@
-%% prepare workspace
+          %% prepare workspace
 clear all
 close all
 clc
@@ -33,11 +33,11 @@ Qmonthly=Qcells;
 
 %% Kirsch + Nowak generation
 
-% 100 realizations of 10 years
+% 100 realizations of 20 years
 
 num_realizations = 100;
-num_years = 10;
-dimensions = {'-100x10'};
+num_years = 20;
+dimensions = {'-100x20'};
 
 %% 
 

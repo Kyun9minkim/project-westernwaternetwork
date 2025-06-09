@@ -1,10 +1,10 @@
 
 library(ggplot2)
 
-qCA <- read.csv("C:/Users/kyungmi1/Documents/Code/project-westernwaternetwork/Streamflow_Generation/modifiedgenerator/synthetic/qCA-100x10-monthly.csv", header = FALSE)
-qCO <- read.csv("C:/Users/kyungmi1/Documents/Code/project-westernwaternetwork/Streamflow_Generation/modifiedgenerator/synthetic/qCO-100x10-monthly.csv", header = FALSE)
-qCO_Actual <- read.csv("C:/Users/kyungmi1/Documents/Code/project-westernwaternetwork/Streamflow_Generation/modifiedgenerator/synthetic/qCO-100x10-monthly-Actual.csv", header = FALSE)
-qRG <- read.csv("C:/Users/kyungmi1/Documents/Code/project-westernwaternetwork/Streamflow_Generation/modifiedgenerator/synthetic/qRG-100x10-monthly.csv", header = FALSE)
+qCA <- read.csv("C:/Users/kyungmi1/Documents/Code/project-westernwaternetwork/Streamflow_Generation/modifiedgenerator/synthetic/qCA-100x20-monthly.csv", header = FALSE)
+qCO <- read.csv("C:/Users/kyungmi1/Documents/Code/project-westernwaternetwork/Streamflow_Generation/modifiedgenerator/synthetic/qCO-100x20-monthly.csv", header = FALSE)
+qCO_Actual <- read.csv("C:/Users/kyungmi1/Documents/Code/project-westernwaternetwork/Streamflow_Generation/modifiedgenerator/synthetic/qCO-100x20-monthly-Actual.csv", header = FALSE)
+qRG <- read.csv("C:/Users/kyungmi1/Documents/Code/project-westernwaternetwork/Streamflow_Generation/modifiedgenerator/synthetic/qRG-100x20-monthly.csv", header = FALSE)
 
 qCA <- t(qCA)
 qCO <- t(qCO)
@@ -22,3 +22,4 @@ matplot(qCO_Actual, type = "l", lty = 1, col = rainbow(100),
 
 matplot(qRG, type = "l", lty = 1, col = rainbow(100),
         xlab = "Simulations", ylab = "Streamflow", main = "Rio Grande")
+

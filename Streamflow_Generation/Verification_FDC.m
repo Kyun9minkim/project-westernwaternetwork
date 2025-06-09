@@ -14,18 +14,18 @@ histRG=Qhistorical(:,3);
 
 %% read data-generated
 
-qCA=readmatrix("./modifiedgenerator/synthetic/qCA-100x10-monthly.csv");
+qCA=readmatrix("./modifiedgenerator/synthetic/qCA-100x20-monthly.csv");
 qCA = qCA';
-qCO=readmatrix("./modifiedgenerator/synthetic/qCO-100x10-monthly.csv");
+qCO=readmatrix("./modifiedgenerator/synthetic/qCO-100x20-monthly.csv");
 qCO = qCO';
-qRG=readmatrix("./modifiedgenerator/synthetic/qRG-100x10-monthly.csv");
+qRG=readmatrix("./modifiedgenerator/synthetic/qRG-100x20-monthly.csv");
 qRG = qRG';
 
 
 %% bootstrap
 
 B = 100; % 부트스트랩 샘플 개수
-years = 10; % 20년치 데이터
+years = 20; % 20년치 데이터
 
 boot_histCA = yearly_bootstrap(histCA, B, years);
 boot_histCO = yearly_bootstrap(histCO, B, years);
@@ -41,10 +41,10 @@ boot_histRG = boot_histRG';
 
 locations = {'CA', 'CO', 'RG'};
 
-% 히스토리컬 데이터 (각각 120×100 행렬)
+% 히스토리컬 데이터 (각각 240×100 행렬)
 hist_data = {boot_histCA, boot_histCO, boot_histRG};
 
-% 생성 데이터 (각각 예를 들어 20×100 행렬)
+% 생성 데이터 (각각 예를 들어 240×100 행렬)
 gen_data = {qCA, qCO, qRG};
 
 %% 서브플롯으로 각 위치의 Flow Duration Curve 플로팅
@@ -64,7 +64,7 @@ for i = 1:3
     sorted_gen = sort(gen_data{i}, 1, 'descend');
     min_gen = min(sorted_gen, [], 2);
     max_gen = max(sorted_gen, [], 2);
-    % 생성 데이터의 Exceedance probability (예: 1/20 ~ 20/20)
+    % 생성 데이터의 Exceedance probability (예: 1/240 ~ 240/240)
     n_gen = size(sorted_gen, 1);  
     exceedance_gen = (1:n_gen)' / n_gen;
     
