@@ -133,7 +133,7 @@ for month = 1:12
     boxplot([histCA_monthly_index, qCA_monthly_index]);
     set(gca, 'XTickLabel', labels);
 end
-sgtitle('CA Aqueduct')
+sgtitle('California')
 %% 
 
 figure(2)
@@ -162,7 +162,7 @@ for month = 1:12
 
 
 end
-sgtitle('CA Aqueduct mean')
+sgtitle('California mean')
 %% 
 
 
@@ -192,7 +192,7 @@ for month = 1:12
     p_var_CA(month) = vartestn(p_var_CA_data, group_CA, 'TestType', 'LeveneAbsolute', 'Display', 'off');
 
 end
-sgtitle('CA Aqueduct std')
+sgtitle('California std')
 %% 
 
 
@@ -203,14 +203,14 @@ hold on;
 yline(0.05, 'r--', 'LineWidth', 2);
 ylim([0 1])
 hold off;
-title('CA Aqueduct rank-sum p')
+title('California rank-sum p')
 subplot(2,1,2)
 bar(p_var_CA)
 hold on;
 yline(0.05, 'r--', 'LineWidth', 2);
 ylim([0 1])
 hold off;
-title('CA Aqueduct levene p')
+title('California levene p')
 
 %% Colorado
 

@@ -100,7 +100,7 @@ stairs(0:max_lag, acf_ci_upper, 'k--', 'LineWidth', 1.5, 'DisplayName', '95% CI 
 
 % 그래프 설정
 ylabel('Autocorrelation');
-title('CA Aqueduct Autocorrelation');
+title('California Autocorrelation');
 xlim([0 max_lag]); % x축을 0부터 12까지 설정
 ylim([-1 1]); % y축 범위 설정
 grid on;
@@ -157,7 +157,7 @@ stairs(0:max_lag, acf_ci_upper, 'k--', 'LineWidth', 1.5, 'DisplayName', '95% CI 
 
 % 그래프 설정
 ylabel('Autocorrelation');
-title('CO Aqueduct Autocorrelation');
+title('Colorado Autocorrelation');
 xlim([0 max_lag]); % x축을 0부터 12까지 설정
 ylim([-1 1]); % y축 범위 설정
 grid on;
@@ -214,7 +214,7 @@ stairs(0:max_lag, acf_ci_upper, 'k--', 'LineWidth', 1.5, 'DisplayName', '95% CI 
 % 그래프 설정
 xlabel('Lag (months)');
 ylabel('Autocorrelation');
-title('RG Aqueduct Autocorrelation');
+title('Rio Grande Autocorrelation');
 xlim([0 max_lag]); % x축을 0부터 12까지 설정
 ylim([-1 1]); % y축 범위 설정
 grid on;
