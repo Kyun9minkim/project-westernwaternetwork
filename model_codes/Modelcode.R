@@ -1,42 +1,69 @@
 
-#author: Kyungmin Kim
-#date: June 11 2025
+# Author: Kyungmin Kim
+# Date: June 11 2025
 
-NetworkFun = Function(TP,)
-
-qCA <- read.csv("C:/Users/kyungmi1/Documents/Code/project-westernwaternetwork/Streamflow_Generation/modifiedgenerator/synthetic/qCA-100x20-monthly.csv", header = FALSE)
-qCO <- read.csv("C:/Users/kyungmi1/Documents/Code/project-westernwaternetwork/Streamflow_Generation/modifiedgenerator/synthetic/qCO-100x20-monthly.csv", header = FALSE)
-qCO_Actual <- read.csv("C:/Users/kyungmi1/Documents/Code/project-westernwaternetwork/Streamflow_Generation/modifiedgenerator/synthetic/qCO-100x20-monthly-Actual.csv", header = FALSE)
-qRG <- read.csv("C:/Users/kyungmi1/Documents/Code/project-westernwaternetwork/Streamflow_Generation/modifiedgenerator/synthetic/qRG-100x20-monthly.csv", header = FALSE)
+WaterNetworkModel = Function(SU, )
 
 
-#Simulation Period (monthly base)
+# Read input data
 
-SU <- 0.1*TP #length 1 year for spin-up period
+#QCA <- read.csv("C:/Users/kyungmi1/Documents/Code/project-westernwaternetwork/Streamflow_Generation/modifiedgenerator/synthetic/qCA-100x20-monthly.csv", header = FALSE)
+#QCO <- read.csv("C:/Users/kyungmi1/Documents/Code/project-westernwaternetwork/Streamflow_Generation/modifiedgenerator/synthetic/qCO-100x20-monthly-Actual.csv", header = FALSE)
+#QRG <- read.csv("C:/Users/kyungmi1/Documents/Code/project-westernwaternetwork/Streamflow_Generation/modifiedgenerator/synthetic/qRG-100x20-monthly.csv", header = FALSE)
+
+#DCA <-
+#DCO <- 
+#DRG <-
+
+# Time related variables
+
 TP <- 120 # 10 years (from 2010 to 2019)
-dt <- 1 # time step is one month
+dt <- 1 # Time step is one month
+SU <- 0.1*T # Spin-up period is 10% of total simulation period
 
-#input data
+# For California
 
-streamflow <- read.csv
 
-#for California
+# Transporting water
 
-DCA #demand
-QCA <- read.csv()
+QCOCA <- numeric(length = T/dt) # Water from Colorado to California
+QCORC <- numeric(length = T/dt) # Water from Colorado to Rio Chama
+QRCRG <- numeric(length = T/dt) # Water from Rio Chama to Rio Grande
+VHE <- numeric(length = T/dt) # Volume of Heron reservoir
+VCO <- numeric(length = T/dt) # Volume of Lake Mead
 
-#for Colorado
+dQCOCAdt <- numeric(length = T/dt)
+dQCORCdt <- numeric(length = T/dt)
+dQRCRGdt <- numeric(length = T/dt)
 
-DCO #demand
-QCO
+# Initial condition
 
-#for Rio Grande
+t <- 1
+QCOCA[t:(SU/dt)] <- 0
+QCORC[t:(SU/dt)] <- 0
+QRCRG[t:(SU/dt)] <- 0
+VHE[t:(SU/dt)] <- ?
 
-DRG <- #demand
-QRG
+# Model Simulation
 
-#Transporting water
+  t <- SU
+  While (t < TP+1){
+    
+    # Rio Grande
+    
+    if(DRG[t]<QRG[t-1]){QRCRG[t] <- DRG[t]-QRG[t-1]} else {QRCRG[t] <- 0}
+    
+    # California (Senior Act)
+    
+    if(DCA[t]<QCA[t-1]){QCOCA[t] <- DCA[t]-QCA[t-1]} else {[QCOCA[t] <- 0]}
+    
+    # Colorado
+    
+    
+  }
 
-QCOCA #water from CO to CA
-QCORG #water from CO to RG
+
+
+  
+  
 
