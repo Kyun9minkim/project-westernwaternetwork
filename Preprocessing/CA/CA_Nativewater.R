@@ -1,5 +1,6 @@
 
-setwd("/Users/kyungminkim/Code/project-westernwaternetwork/Preprocessing/CA")
+#setwd("/Users/kyungminkim/Code/project-westernwaternetwork/Preprocessing/CA") #Mac
+setwd("C:\\Users\\kyungmi1\\Documents\\Code\\project-westernwaternetwork\\Preprocessing\\CA") #Window
 
 # Load monthly water delivery data
 

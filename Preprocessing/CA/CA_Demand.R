@@ -1,5 +1,7 @@
 
-setwd("/Users/kyungminkim/Code/project-westernwaternetwork/Preprocessing/CA")
+#setwd("/Users/kyungminkim/Code/project-westernwaternetwork/Preprocessing/CA") #Mac
+setwd("C:\\Users\\kyungmi1\\Documents\\Code\\project-westernwaternetwork\\Preprocessing\\CA") #Window
+
 
 library(dplyr)
 library(stringr)
@@ -140,7 +142,7 @@ e_WRIM_aggregated_monthly_long <- e_WRIM_aggregated_monthly_long %>%
 
 # Save aggregated monthly water use data to CSV
 
-write.csv(e_WRIM_aggregated_monthly_long, "e_WRIM_aggregated_monthly_km3.csv", row.names = FALSE)
+write.csv(e_WRIM_aggregated_monthly_long, "CA_demand_monthly_km3.csv", row.names = FALSE)
 
 # Monthly water demand from 2007–2019
 
