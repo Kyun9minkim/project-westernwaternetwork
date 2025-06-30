@@ -2,7 +2,6 @@
 #setwd("/Users/kyungminkim/Code/project-westernwaternetwork/Preprocessing/CA") #Mac
 setwd("C:\\Users\\kyungmi1\\Documents\\Code\\project-westernwaternetwork\\Preprocessing\\CA") #Window
 
-
 library(dplyr)
 library(stringr)
 library(ggplot2)
