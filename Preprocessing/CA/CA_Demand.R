@@ -209,3 +209,27 @@ ggplot(e_WRIM_merged, aes(x = DATE)) +
   ) +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+e_WRIM_filtered %>%
+  filter(PRIMARY_OWNER_NAME == "THE METROPOLITAN WATER DISTRICT OF SOUTHERN CALIFORNIA") %>%
+  nrow()
+
+e_WRIM_filtered %>%
+  filter(PRIMARY_OWNER_NAME == "LOS ANGELES DEPARTMENT OF WATER AND POWER") %>%
+  nrow()
+
+e_WRIM_filtered %>%
+  filter(PRIMARY_OWNER_NAME == "CITY OF LOS ANGELES, DEPARTMENT OF RECREATION AND PARKS") %>%
+  nrow()
+
+e_WRIM_filtered %>%
+  filter(PRIMARY_OWNER_NAME == "COACHELLA VALLEY WATER DISTRICT") %>%
+  nrow()
+
+e_WRIM_filtered %>%
+  filter(PRIMARY_OWNER_NAME == "PALO VERDE IRRIGATION DISTRICT") %>%
+  nrow()
+  
+e_WRIM_filtered %>%
+  filter(PRIMARY_OWNER_NAME == "IMPERIAL IRRIGATION DISTRICT") %>%
+  nrow()

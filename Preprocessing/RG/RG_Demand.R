@@ -111,6 +111,42 @@ merged_data <- merged_data %>%
 
 write.csv(merged_data, "RG_demand_monthly_km3.csv", row.names = FALSE)
 
+
+# Monthly water demand from 2010–2019
+
+ggplot(merged_data, aes(x = DATE, y = km3.month)) +
+  geom_line(color = "steelblue", size = 1) +
+  labs(
+    title = "ABC Monthly Water Demand (2010–2019)",
+    x = "Date",
+    y = "Amount Used (km³)"
+  ) +
+  scale_x_date(
+    limits = as.Date(c("2010-01-01", "2019-12-31")),
+    date_labels = "%Y",
+    date_breaks = "1 year"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# Monthly water demand from 2010–2019
+
+ggplot(merged_data, aes(x = DATE, y = total_diversion_km3)) +
+  geom_line(color = "steelblue", size = 1) +
+  labs(
+    title = "MRGCD Monthly Water Demand (2010–2019)",
+    x = "Date",
+    y = "Amount Used (km³)"
+  ) +
+  scale_x_date(
+    limits = as.Date(c("2010-01-01", "2019-12-31")),
+    date_labels = "%Y",
+    date_breaks = "1 year"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+
 # Monthly water demand from 2010–2019
 
 ggplot(merged_data, aes(x = DATE, y = total_water_km3)) +
@@ -127,5 +163,7 @@ ggplot(merged_data, aes(x = DATE, y = total_water_km3)) +
   ) +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+
 
 
