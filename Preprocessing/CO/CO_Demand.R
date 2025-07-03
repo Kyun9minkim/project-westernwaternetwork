@@ -101,7 +101,7 @@ ggplot(Uppermonthly,
 ggplot(Uppermonthly,
        aes(x = DATE, y = NM_Export_outsidesystem_km3_monthly)) +
   geom_line(size = 1) +
-  labs(title = "New Mexico export outside system (2010–2019)", x = "Date", y = "Amount Used (km³)") +
+  labs(title = "New Mexico Export Outside System (2010–2019)", x = "Date", y = "Amount Used (km³)") +
   scale_x_date(limits = as.Date(c("2010-01-01", "2019-12-31")),
                date_labels = "%Y",
                date_breaks = "1 year") +

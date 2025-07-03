@@ -25,9 +25,9 @@ CA_water_transport <- CA_native %>%
   left_join( 
             select(e_WRIM_aggregated_monthly_long, DATE, AMOUNT_USED),
             by = "DATE") %>%
-  mutate(CA_water_transport = AMOUNT_USED - native_total) %>%
+  mutate(CA_water_transport = ifelse(AMOUNT_USED > native_total, AMOUNT_USED - native_total, 0)) %>%
   left_join(select(Reported, DATE, Reported_Transport), by = "DATE")
-
+  
 # Plot both WRIM estimates and reported values
 
 ggplot(CA_water_transport, aes(x = DATE)) +
