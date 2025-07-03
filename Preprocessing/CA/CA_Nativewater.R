@@ -1,6 +1,20 @@
 
+
+# -------------------------------
+# Title       : CA_Nativewater
+# Author      : Kyungmin Kim
+# Last update : 2025-07-01
+# Purpose     : Preprocess California Native Water
+# Data Source : CA and LA Aqueduct Monthly Water Delivery Data from 2000 to 2019
+# Notes       :
+# -------------------------------
+
+# Set working directory
+
 #setwd("/Users/kyungminkim/Code/project-westernwaternetwork/Preprocessing/CA") #Mac
 setwd("C:\\Users\\kyungmi1\\Documents\\Code\\project-westernwaternetwork\\Preprocessing\\CA") #Window
+
+# Load required libraries
 
 library(tidyverse)
 
@@ -9,8 +23,8 @@ library(tidyverse)
 CA_aqueduct <- read.csv("CA_Aqueduct.csv")
 LA_aqueduct <- read.csv("LA_Aqueduct.csv")
 
-# # Add a DATE column to each dataset for merging
-  
+# Add a DATE column to each dataset for merging
+
 CA_aqueduct <- CA_aqueduct %>%
   mutate(DATE = as.Date(paste(YEAR, MONTH, 1, sep = "-")))
 
@@ -36,21 +50,15 @@ CA_native <- LA_aqueduct %>%
 write.csv(CA_native, "CA_native_monthly_km3.csv", row.names = FALSE)
 
 # Plot total native water volume for California (2000–2019)
-  
-  ggplot(CA_native, aes(x = DATE, y = native_total)) +
-    geom_line(color = "steelblue", size = 1) +
-    labs(
-      title = "California Monthly Native Water (2000–2019)",
-      x = "Date",
-      y = "Native Water Volume (km³)"
-    ) +
-    scale_x_date(
-      limits = as.Date(c("2000-01-01", "2019-12-31")),
-      date_labels = "%Y",
-      date_breaks = "1 year"
-    ) +
-    theme_minimal() +
-    theme(axis.text.x = element_text(angle = 45, hjust = 1))
-  
-  
-  
+
+ggplot(CA_native, aes(x = DATE, y = native_total)) +
+  geom_line(size = 1) +
+  labs(title = "California Monthly Native Water (2000–2019)", x = "Date", y = "Native Water Volume (km³)") +
+  scale_x_date(limits = as.Date(c("2000-01-01", "2019-12-31")),
+               date_labels = "%Y",
+               date_breaks = "1 year") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        plot.title = element_text(hjust = 0.5))
+
+

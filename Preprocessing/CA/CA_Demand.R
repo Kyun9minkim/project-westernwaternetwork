@@ -1,19 +1,31 @@
 
+
+# -------------------------------
+# Title       : CA_Demand
+# Author      : Kyungmin Kim
+# Last update : 2025-07-01
+# Purpose     : Preprocess California Demand Data
+# Data Source : California WRIM Data from 2007 to 2019
+# Notes       :
+# -------------------------------
+
+# Set working directory
+
 #setwd("/Users/kyungminkim/Code/project-westernwaternetwork/Preprocessing/CA") #Mac
 setwd("C:\\Users\\kyungmi1\\Documents\\Code\\project-westernwaternetwork\\Preprocessing\\CA") #Window
 
-library(dplyr)
-library(stringr)
-library(ggplot2)
-library(lubridate)
+# Load required libraries
+
+library(tidyverse)
 
 years <- 2000:2019
 
-# # Calculate total monthly amount used by year (aggregated across all owners)
+# Calculate total monthly amount used by year (aggregated across all owners)
 
 e_WRIM_all <- lapply(years, function(y) {
   read.csv(paste0("e-WRIM_", y, ".csv"))
-}) %>% bind_rows()
+}) %>% bind_rows() %>%
+  rename(CALENDAR_YEAR = CALENDAR.YEAR)
 
 # Define list of owners to include in the analysis
 
@@ -34,15 +46,16 @@ e_WRIM_filtered <- e_WRIM_all %>%
 # Define list of non-consumptive or irrelevant rights to exclude
 
 rights_not_to_keep <- c(
-  #THE METROPOLITAN WATER DISTRICT OF SOUTHERN CALIFORNIA
+ 
+   # THE METROPOLITAN WATER DISTRICT OF SOUTHERN CALIFORNIA
   "X000630",
   "A030661",
   
-  #CITY OF LOS ANGELES, DEPARTMENT OF RECREATION AND PARKS
-  "S022041", 
+  # CITY OF LOS ANGELES, DEPARTMENT OF RECREATION AND PARKS
+  "S022041",
   
-  #LOS ANGELES DEPARTMENT OF WATER AND POWER
-  "X003598", 
+  # LOS ANGELES DEPARTMENT OF WATER AND POWER
+  "X003598",
   "A028899",
   "S009751",
   "S001750",
@@ -71,7 +84,7 @@ rights_not_to_keep <- c(
   "A008043",
   "A004435",
   "A003850",
-  "A000531", 
+  "A000531",
   
   #IMPERIAL IRRIGATION DISTRICT
   "A008534",
@@ -87,18 +100,27 @@ rights_not_to_keep <- c(
 e_WRIM_filtered <- e_WRIM_filtered %>%
   filter(!APPLICATION_NUMBER %in% rights_not_to_keep)
 
-# Extract year from CALENDAR.YEAR field and place it next to the original column
+# Extract year from CALENDAR_YEAR field and place it next to the original column
 
 e_WRIM_filtered <- e_WRIM_filtered %>%
-  mutate(YEAR = str_extract(CALENDAR.YEAR, "[0-9]{4}")) %>%
-  relocate(YEAR, .after = CALENDAR.YEAR)
+  mutate(YEAR = str_extract(CALENDAR_YEAR, "[0-9]{4}")) %>%
+  relocate(YEAR, .after = CALENDAR_YEAR)
 
 # Define monthly water use columns for aggregation
 
 month_cols <- c(
-  "JAN_AMOUNT_USED", "FEB_AMOUNT_USED", "MAR_AMOUNT_USED", "APR_AMOUNT_USED",
-  "MAY_AMOUNT_USED", "JUN_AMOUNT_USED", "JUL_AMOUNT_USED", "AUG_AMOUNT_USED",
-  "SEP_AMOUNT_USED", "OCT_AMOUNT_USED", "NOV_AMOUNT_USED", "DEC_AMOUNT_USED"
+  "JAN_AMOUNT_USED",
+  "FEB_AMOUNT_USED",
+  "MAR_AMOUNT_USED",
+  "APR_AMOUNT_USED",
+  "MAY_AMOUNT_USED",
+  "JUN_AMOUNT_USED",
+  "JUL_AMOUNT_USED",
+  "AUG_AMOUNT_USED",
+  "SEP_AMOUNT_USED",
+  "OCT_AMOUNT_USED",
+  "NOV_AMOUNT_USED",
+  "DEC_AMOUNT_USED"
 )
 
 # Calculate total monthly amount used by each owner and year
@@ -116,20 +138,30 @@ e_WRIM_aggregated_monthly <- e_WRIM_owner_monthly %>%
 
 # Convert to long format for plotting
 e_WRIM_aggregated_monthly_long <- e_WRIM_aggregated_monthly %>%
-  pivot_longer(
-    cols = -YEAR,
-    names_to = "MONTH",
-    values_to = "AMOUNT_USED"
-  )
+  pivot_longer(cols = -YEAR,
+               names_to = "MONTH",
+               values_to = "AMOUNT_USED")
 
 # Convert MONTH names to actual month numbers and create a date column
 e_WRIM_aggregated_monthly_long <- e_WRIM_aggregated_monthly_long %>%
   mutate(
-    MONTH_NUM = match(MONTH, c(
-      "JAN_AMOUNT_USED", "FEB_AMOUNT_USED", "MAR_AMOUNT_USED", "APR_AMOUNT_USED",
-      "MAY_AMOUNT_USED", "JUN_AMOUNT_USED", "JUL_AMOUNT_USED", "AUG_AMOUNT_USED",
-      "SEP_AMOUNT_USED", "OCT_AMOUNT_USED", "NOV_AMOUNT_USED", "DEC_AMOUNT_USED"
-    )),
+    MONTH_NUM = match(
+      MONTH,
+      c(
+        "JAN_AMOUNT_USED",
+        "FEB_AMOUNT_USED",
+        "MAR_AMOUNT_USED",
+        "APR_AMOUNT_USED",
+        "MAY_AMOUNT_USED",
+        "JUN_AMOUNT_USED",
+        "JUL_AMOUNT_USED",
+        "AUG_AMOUNT_USED",
+        "SEP_AMOUNT_USED",
+        "OCT_AMOUNT_USED",
+        "NOV_AMOUNT_USED",
+        "DEC_AMOUNT_USED"
+      )
+    ),
     YEAR = as.integer(YEAR),
     DATE = ymd(paste(YEAR, MONTH_NUM, 1, sep = "-"))
   )
@@ -141,47 +173,35 @@ e_WRIM_aggregated_monthly_long <- e_WRIM_aggregated_monthly_long %>%
 
 # Save aggregated monthly water use data to CSV
 
-write.csv(e_WRIM_aggregated_monthly_long, "CA_demand_monthly_km3.csv", row.names = FALSE)
+write.csv(e_WRIM_aggregated_monthly_long,
+          "CA_demand_monthly_km3.csv",
+          row.names = FALSE)
 
-# Monthly water demand from 2007–2019
-
-ggplot(e_WRIM_aggregated_monthly_long, aes(x = DATE, y = AMOUNT_USED)) +
-  geom_line(color = "steelblue", size = 1) +
-  labs(
-    title = "California Monthly Water Demand (2007–2019)",
-    x = "Date",
-    y = "Amount Used (km³)"
-  ) +
-  scale_x_date(
-    limits = as.Date(c("2007-01-01", "2019-12-31")),
-    date_labels = "%Y",
-    date_breaks = "1 year"
-  ) +
-  theme_minimal() +
-  theme(
-    axis.text.x = element_text(angle = 45, hjust = 1)
-  )
-
-# Monthly water demand from 2010–2019
+# Plot California Monthly water demand for entire period
 
 ggplot(e_WRIM_aggregated_monthly_long, aes(x = DATE, y = AMOUNT_USED)) +
-  geom_line(color = "steelblue", size = 1) +
-  labs(
-    title = "California Monthly Water Demand (2010–2019)",
-    x = "Date",
-    y = "Amount Used (km³)"
-  ) +
-  scale_x_date(
-    limits = as.Date(c("2010-01-01", "2019-12-31")),
-    date_labels = "%Y",
-    date_breaks = "1 year"
-  ) +
+  geom_line(size = 1) +
+  labs(title = "California Monthly Water Demand (2007–2019)", x = "Date", y = "Amount Used (km³)") +
+  scale_x_date(limits = as.Date(c("2007-01-01", "2019-12-31")),
+               date_labels = "%Y",
+               date_breaks = "1 year") +
   theme_minimal() +
-  theme(
-    axis.text.x = element_text(angle = 45, hjust = 1)
-  )
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        plot.title = element_text(hjust = 0.5))
 
-# Read reported water transport data
+# Plot California Monthly water demand for 2010–2019
+
+ggplot(e_WRIM_aggregated_monthly_long, aes(x = DATE, y = AMOUNT_USED)) +
+  geom_line(size = 1) +
+  labs(title = "California Monthly Water Demand (2010–2019)", x = "Date", y = "Amount Used (km³)") +
+  scale_x_date(limits = as.Date(c("2010-01-01", "2019-12-31")),
+               date_labels = "%Y",
+               date_breaks = "1 year") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        plot.title = element_text(hjust = 0.5))
+
+# Read reported water transport data to compare
 Reported <- read.csv("Reported_water_transport.csv")
 
 # Add DATE column to match WRIM dataset
@@ -190,25 +210,9 @@ Reported <- Reported %>%
 
 # Merge reported values with WRIM estimates by DATE
 e_WRIM_merged <- e_WRIM_aggregated_monthly_long %>%
-  left_join(Reported, by = "DATE")  
+  left_join(Reported, by = "DATE")
 
-# Plot both WRIM estimates and reported values
-ggplot(e_WRIM_merged, aes(x = DATE)) +
-  geom_line(aes(y = AMOUNT_USED, color = "WRIM estimate"), size = 1) +
-  geom_line(aes(y = Reported.Transport, color = "Reported value"), size = 1) +
-  labs(
-    title = "Comparison: WRIM Estimate vs Reported Water Use",
-    x = "Year",
-    y = "Amount Used (km³)",
-    color = "Legend"
-  ) +
-  scale_x_date(
-    limits = as.Date(c("2010-01-01", "2019-12-31")),
-    date_labels = "%Y",
-    date_breaks = "1 year"
-  ) +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+# Check the number of data of each owner
 
 e_WRIM_filtered %>%
   filter(PRIMARY_OWNER_NAME == "THE METROPOLITAN WATER DISTRICT OF SOUTHERN CALIFORNIA") %>%
@@ -229,7 +233,7 @@ e_WRIM_filtered %>%
 e_WRIM_filtered %>%
   filter(PRIMARY_OWNER_NAME == "PALO VERDE IRRIGATION DISTRICT") %>%
   nrow()
-  
+
 e_WRIM_filtered %>%
   filter(PRIMARY_OWNER_NAME == "IMPERIAL IRRIGATION DISTRICT") %>%
   nrow()
