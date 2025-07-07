@@ -11,8 +11,8 @@
 
 # Set working directory
 
-#setwd("/Users/kyungminkim/Code/project-westernwaternetwork/Preprocessing/CA") #Mac
-setwd("C:\\Users\\kyungmi1\\Documents\\Code\\project-westernwaternetwork\\Preprocessing\\CA") #Window
+setwd("/Users/kyungminkim/Code/project-westernwaternetwork/Preprocessing/CA") #Mac
+#setwd("C:\\Users\\kyungmi1\\Documents\\Code\\project-westernwaternetwork\\Preprocessing\\CA") #Window
 
 # Load required libraries
 
@@ -61,4 +61,6 @@ ggplot(CA_native, aes(x = DATE, y = native_total)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1),
         plot.title = element_text(hjust = 0.5))
 
+# Save data frame as RDS file
 
+saveRDS(CA_native, file = "CA_native.rds")

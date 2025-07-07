@@ -10,8 +10,8 @@
 
 # Set working directory
 
-#setwd("/Users/kyungminkim/Code/project-westernwaternetwork/Preprocessing/RG") #Mac
-setwd("C:\\Users\\kyungmi1\\Documents\\Code\\project-westernwaternetwork\\Preprocessing\\RG") # Windows
+setwd("/Users/kyungminkim/Code/project-westernwaternetwork/Preprocessing/RG") #Mac
+#setwd("C:\\Users\\kyungmi1\\Documents\\Code\\project-westernwaternetwork\\Preprocessing\\RG") # Windows
 
 # Load required libraries
 
@@ -180,3 +180,7 @@ ggplot(merged_data, aes(x = DATE, y = total_water_km3)) +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1),
         plot.title = element_text(hjust = 0.5))
+
+# Save data frame as RDS file
+
+saveRDS(merged_data, file = "merged_data.rds")

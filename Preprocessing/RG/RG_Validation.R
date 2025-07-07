@@ -11,12 +11,18 @@
 
 # Set working directory
 
-#setwd("/Users/kyungminkim/Code/project-westernwaternetwork/Preprocessing/RG") #Mac
-setwd("C:\\Users\\kyungmi1\\Documents\\Code\\project-westernwaternetwork\\Preprocessing\\RG") # Windows
+setwd("/Users/kyungminkim/Code/project-westernwaternetwork/Preprocessing/RG") #Mac
+#setwd("C:\\Users\\kyungmi1\\Documents\\Code\\project-westernwaternetwork\\Preprocessing\\RG") # Windows
 
 # Load required libraries
 
 library(tidyverse)
+merged_data <- readRDS("merged_data.rds")
+Embudo <- readRDS("Embudo.rds")
+QRCTRI <- readRDS("QRCTRI.rds")
+Lapuente <- readRDS("Lapuente.rds")
+Sanantonio <- readRDS("Sanantonio.rds")
+Uppermonthly <- readRDS("Uppermonthly.rds")
 
 RG_water_transport <- merged_data %>%
   
@@ -49,7 +55,7 @@ RG_water_transport <- merged_data %>%
   # Estimate = DRG + QRGLOW - available native sources = DRG + QRGLOW - QRCUP - QRCTRI - QRGUP
   
   mutate(QCORC = ifelse(DRG > QRGUP, DRG + QRGLOW - QRCUP - QRCTRI - QRGUP, 0)) %>%
-  mutate(QCORC_scaled = ifelse(Scaled_DRG > QRGUP, DRG + QRGLOW - QRCUP - QRCTRI - QRGUP, 0)) %>%
+  mutate(QCORC_scaled = ifelse(Scaled_DRG > QRGUP, Scaled_DRG + QRGLOW - QRCUP - QRCTRI - QRGUP, 0)) %>%
   
   # Join reported transport data for comparison
   
@@ -89,3 +95,13 @@ ggplot(RG_water_transport, aes(x = DATE)) +
 QCORG_summary <- summarise(RG_water_transport, across(c(QCORC, QCORC_scaled, QCORC_reported), sum, na.rm = TRUE))
 
 print(QCORG_summary)
+
+DRG_summary <- summarise(RG_water_transport, across(c(DRG, Scaled_DRG), sum, na.rm = TRUE))
+
+print(DRG_summary)
+
+
+
+
+
+

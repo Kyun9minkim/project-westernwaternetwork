@@ -11,12 +11,16 @@
 
 # Set working directory
 
-#setwd("/Users/kyungminkim/Code/project-westernwaternetwork/Preprocessing/CA") #Mac
-setwd("C:\\Users\\kyungmi1\\Documents\\Code\\project-westernwaternetwork\\Preprocessing\\CA") #Window
+setwd("/Users/kyungminkim/Code/project-westernwaternetwork/Preprocessing/CA") #Mac
+#setwd("C:\\Users\\kyungmi1\\Documents\\Code\\project-westernwaternetwork\\Preprocessing\\CA") #Window
 
 # Load required libraries
 
 library(tidyverse)
+CA_native <- readRDS("CA_native.rds")
+e_WRIM_aggregated_monthly_long <- readRDS("e_WRIM_aggregated_monthly_long.rds")
+Reported <- readRDS("Reported.rds")
+
 
 # Calculate estimated water transport 
 

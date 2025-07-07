@@ -11,8 +11,8 @@
 
 # Set working directory
 
-#setwd("/Users/kyungminkim/Code/project-westernwaternetwork/Preprocessing/CA") #Mac
-setwd("C:\\Users\\kyungmi1\\Documents\\Code\\project-westernwaternetwork\\Preprocessing\\CA") #Window
+setwd("/Users/kyungminkim/Code/project-westernwaternetwork/Preprocessing/CA") #Mac
+#setwd("C:\\Users\\kyungmi1\\Documents\\Code\\project-westernwaternetwork\\Preprocessing\\CA") #Window
 
 # Load required libraries
 
@@ -237,3 +237,9 @@ e_WRIM_filtered %>%
 e_WRIM_filtered %>%
   filter(PRIMARY_OWNER_NAME == "IMPERIAL IRRIGATION DISTRICT") %>%
   nrow()
+
+# Save data frame as RDS file
+
+saveRDS(e_WRIM_aggregated_monthly_long, file = "e_WRIM_aggregated_monthly_long.rds")
+saveRDS(Reported, file = "Reported.rds")
+

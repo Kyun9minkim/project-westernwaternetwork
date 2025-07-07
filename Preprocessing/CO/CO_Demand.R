@@ -11,8 +11,8 @@
 
 # Set working directory
 
-#setwd("/Users/kyungminkim/Code/project-westernwaternetwork/Preprocessing/CA") #Mac
-setwd("C:\\Users\\kyungmi1\\Documents\\Code\\project-westernwaternetwork\\Preprocessing\\CO") #Window
+setwd("/Users/kyungminkim/Code/project-westernwaternetwork/Preprocessing/CO") #Mac
+#setwd("C:\\Users\\kyungmi1\\Documents\\Code\\project-westernwaternetwork\\Preprocessing\\CO") #Window
 
 # Load required libraries
 
@@ -124,3 +124,7 @@ ggplot(Lowerdemand, aes(x = DATE)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1),
         plot.title = element_text(hjust = 0.5),
         legend.position = "bottom")
+
+# Save data frame as RDS file
+
+saveRDS(Uppermonthly, file = "../RG/Uppermonthly.rds")

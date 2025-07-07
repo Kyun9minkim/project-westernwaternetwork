@@ -11,8 +11,8 @@
 
 # Set working directory
 
-#setwd("/Users/kyungminkim/Code/project-westernwaternetwork/Preprocessing/RG") #Mac
-setwd("C:\\Users\\kyungmi1\\Documents\\Code\\project-westernwaternetwork\\Preprocessing\\RG") #Window
+setwd("/Users/kyungminkim/Code/project-westernwaternetwork/Preprocessing/RG") #Mac
+#setwd("C:\\Users\\kyungmi1\\Documents\\Code\\project-westernwaternetwork\\Preprocessing\\RG") #Window
 
 # Load required libraries
 
@@ -307,4 +307,13 @@ QRCTRI = QRCTRI1 %>%
   left_join(Lamadera %>%
               select(DATE, Lamadera.km3 = monthly_total_volume_km3), by = "DATE") %>%
   mutate(QRCTRI.km3 = QRCTRI1.km3 + QRCTRI2.km3 + QRCTRI3.km3 + Lamadera.km3)
+
+# Save data frame as RDS file
+
+saveRDS(Embudo, file = "Embudo.rds")
+saveRDS(QRCTRI, file = "QRCTRI.rds")
+saveRDS(Sanantonio, file = "Sanantonio.rds")
+saveRDS(Lapuente, file = "Lapuente.rds")
+
+
 
