@@ -11,8 +11,8 @@
 
 # Set working directory
 
-setwd("/Users/kyungminkim/Code/project-westernwaternetwork/Preprocessing/RG") #Mac
-#setwd("C:\\Users\\kyungmi1\\Documents\\Code\\project-westernwaternetwork\\Preprocessing\\RG") # Windows
+#setwd("/Users/kyungminkim/Code/project-westernwaternetwork/Preprocessing/RG") #Mac
+setwd("C:\\Users\\kyungmi1\\Documents\\Code\\project-westernwaternetwork\\Preprocessing\\RG") # Windows
 
 # Load required libraries
 
@@ -29,7 +29,9 @@ RG_water_transport <- merged_data %>%
   select(YEAR.x, MONTH.x, DATE, total_water_km3) %>% # Total water demand in Rio Grande (ABC + MRGCD)
   rename(DRG = total_water_km3) %>%
   
-  mutate(Scaled_DRG = DRG * (1 / 0.718295218295218)) %>% #Adjust demand to match proportion (rescale DRG)
+  #mutate(Scaled_DRG = DRG * (1 / 0.718295218295218)) %>% #Adjust demand to match proportion (rescale DRG) (% of Contracted)
+  mutate(Scaled_DRG = DRG * (1 / 0.816562667)) %>% #Adjust demand to match proportion (rescale DRG) (% of Actually delivered)
+
   
   # Native water from Upper Rio Grande (Embudo)
   
@@ -96,11 +98,37 @@ QCORG_summary <- summarise(RG_water_transport, across(c(QCORC, QCORC_scaled, QCO
 
 print(QCORG_summary)
 
+# Calculate total demand over 10 years to compare the magnitude
+
 DRG_summary <- summarise(RG_water_transport, across(c(DRG, Scaled_DRG), sum, na.rm = TRUE))
 
 print(DRG_summary)
 
+# Calculate average and total streamflow over 10 years to compare the magnitude
 
+summary_means <- RG_water_transport %>%
+  summarise(
+    DRG_mean = mean(DRG, na.rm = TRUE),
+    Scaled_DRG_mean = mean(Scaled_DRG, na.rm = TRUE),
+    QRGLOW_mean = mean(QRGLOW, na.rm = TRUE),
+    QRCUP_mean = mean(QRCUP, na.rm = TRUE),
+    QRCTRI_mean = mean(QRCTRI, na.rm = TRUE),
+    QRGUP_mean = mean(QRGUP, na.rm = TRUE)
+  )
+
+print(summary_means)
+
+summary_sums <- RG_water_transport %>%
+  summarise(
+    DRG_sum = sum(DRG, na.rm = TRUE),
+    Scaled_DRG_sum = sum(Scaled_DRG, na.rm = TRUE),
+    QRGLOW_sum = sum(QRGLOW, na.rm = TRUE),
+    QRCUP_sum = sum(QRCUP, na.rm = TRUE),
+    QRCTRI_sum = sum(QRCTRI, na.rm = TRUE),
+    QRGUP_sum = sum(QRGUP, na.rm = TRUE)
+  )
+
+print(summary_sums)
 
 
 
