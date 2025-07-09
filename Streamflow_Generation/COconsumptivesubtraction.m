@@ -3,10 +3,11 @@
 close all;
 clc;
 clear all;
+cd ./
 
 %% read data-original historical
 
-Qconsumptive = readmatrix('./consumptive.csv');
+Qconsumptive = readmatrix('./consumptive');
 
 %% read data-generated
 

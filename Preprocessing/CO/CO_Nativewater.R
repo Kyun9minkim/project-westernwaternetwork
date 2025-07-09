@@ -11,8 +11,8 @@
 
 # Set working directory
 
-setwd("/Users/kyungminkim/Code/project-westernwaternetwork/Preprocessing/CO") #Mac
-#setwd("C:\\Users\\kyungmi1\\Documents\\Code\\project-westernwaternetwork\\Preprocessing\\CO") #Window
+#setwd("/Users/kyungminkim/Code/project-westernwaternetwork/Preprocessing/CO") #Mac
+setwd("C:\\Users\\kyungmi1\\Documents\\Code\\project-westernwaternetwork\\Preprocessing\\CO") #Window
 
 # Load required libraries
 
@@ -31,6 +31,10 @@ Natulees <- Natulees %>%
 
 Natulees <- Natulees %>%
   mutate(DATE = as.Date(paste(YEAR, MONTH, 1, sep = "-")))
+
+# Save the native water data to CSV
+
+write.csv(Natulees, "CO_native_monthly_km3.csv", row.names = FALSE)
 
 # Plot total native water volume for Colorado (2000–2019)
 

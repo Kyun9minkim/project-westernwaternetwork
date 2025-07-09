@@ -11,8 +11,8 @@
 
 # Set working directory
 
-setwd("/Users/kyungminkim/Code/project-westernwaternetwork/Preprocessing/RG") #Mac
-#setwd("C:\\Users\\kyungmi1\\Documents\\Code\\project-westernwaternetwork\\Preprocessing\\RG") #Window
+#setwd("/Users/kyungminkim/Code/project-westernwaternetwork/Preprocessing/RG") #Mac
+setwd("C:\\Users\\kyungmi1\\Documents\\Code\\project-westernwaternetwork\\Preprocessing\\RG") #Window
 
 # Load required libraries
 
@@ -45,6 +45,10 @@ Embudo <- Embudo %>%
 Embudo <- Embudo %>%
   mutate(monthly_total_volume_km3	 = monthly_total_volume_cfs_month * 2.8317 *
            10^(-11))
+
+# Save the native water data to CSV
+
+write.csv(Embudo, "RG_native_monthly_km3.csv", row.names = FALSE)
 
 # Plot total native water volume for Colorado (2000–2019)
 
