@@ -11,8 +11,8 @@
 
 # Set working directory
 
-#setwd("/Users/kyungminkim/Code/project-westernwaternetwork/Preprocessing/RG") #Mac
-setwd("C:\\Users\\kyungmi1\\Documents\\Code\\project-westernwaternetwork\\Preprocessing\\RG") # Windows
+setwd("/Users/kyungminkim/Code/project-westernwaternetwork/Preprocessing/RG") #Mac
+#setwd("C:\\Users\\kyungmi1\\Documents\\Code\\project-westernwaternetwork\\Preprocessing\\RG") # Windows
 
 # Load required libraries
 
@@ -29,8 +29,8 @@ RG_water_transport <- merged_data %>%
   select(YEAR.x, MONTH.x, DATE, total_water_km3) %>% # Total water demand in Rio Grande (ABC + MRGCD)
   rename(DRG = total_water_km3) %>%
   
-  #mutate(Scaled_DRG = DRG * (1 / 0.718295218295218)) %>% #Adjust demand to match proportion (rescale DRG) (% of Contracted)
-  mutate(Scaled_DRG = DRG * (1 / 0.816562667)) %>% #Adjust demand to match proportion (rescale DRG) (% of Actually delivered)
+  mutate(Scaled_DRG = DRG * (1 / 0.718295218295218)) %>% #Adjust demand to match proportion (rescale DRG) (% of Contracted)
+  #mutate(Scaled_DRG = DRG * (1 / 0.816562667)) %>% #Adjust demand to match proportion (rescale DRG) (% of Actually delivered)
 
   
   # Native water from Upper Rio Grande (Embudo)

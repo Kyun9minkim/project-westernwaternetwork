@@ -71,7 +71,8 @@ Lowerdemand <- Lowerdemand %>%
   mutate(AZ_km3 = AZ_AF * 1.23348e-6) %>%
   mutate(CA_km3 = CA_AF * 1.23348e-6) %>%
   mutate(NV_km3 = NV_AF * 1.23348e-6) %>%
-  mutate(MX_km3 = MX_AF * 1.23348e-6)
+  mutate(MX_km3 = MX_AF * 1.23348e-6) %>%
+  mutate(D_COLOW = AZ_km3 + NV_km3 + MX_km3) # California excluded
 
 # Add DATE column to match to other dataset
 
