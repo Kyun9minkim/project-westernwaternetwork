@@ -10,8 +10,8 @@
 
 # Set working directory
 
-setwd("/Users/kyungminkim/Code/project-westernwaternetwork/model_codes") #Mac
-#setwd("C:\\Users\\kyungmi1\\Documents\\Code\\project-westernwaternetwork\\model_codes") #Window
+#setwd("/Users/kyungminkim/Code/project-westernwaternetwork/model_codes") #Mac
+setwd("C:\\Users\\kyungmi1\\Documents\\Code\\project-westernwaternetwork\\model_codes") #Window
 
 # Load required libraries
 

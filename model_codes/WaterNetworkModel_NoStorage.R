@@ -11,8 +11,8 @@
 
 # Set working directory
 
-setwd("/Users/kyungminkim/Code/project-westernwaternetwork/model_codes") #Mac
-#setwd("C:\\Users\\kyungmi1\\Documents\\Code\\project-westernwaternetwork\\model_codes") #Window
+#setwd("/Users/kyungminkim/Code/project-westernwaternetwork/model_codes") #Mac
+setwd("C:\\Users\\kyungmi1\\Documents\\Code\\project-westernwaternetwork\\model_codes") #Window
 
 # Load required libraries
 
@@ -56,12 +56,14 @@ WaterNetworkModel_NoStorage <- function(input) {
     
     # Colorado Upper
     
-    Q_CO <- Q_COUP - D_COUP
     if (Q_COUP < D_COUP) {
+      Q_CO <- 0
       Shortage_COUP <- D_COUP - Q_COUP
     } else {
+      Q_CO <- Q_COUP - D_COUP
       Shortage_COUP <- 0
     }
+
     
     # Rio Grande
     
