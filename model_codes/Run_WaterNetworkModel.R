@@ -27,6 +27,9 @@ qCA_gen <- read.csv("qCA-100x20-monthly.csv", header = TRUE)[121:240, 1:100]
 qCO_gen <- read.csv("qCO-100x20-monthly.csv", header = TRUE)[121:240, 1:100]
 qRG_gen <- read.csv("qRG-100x20-monthly.csv", header = TRUE)[121:240, 1:100]
 
+# Number of scenarios
+
+n_scenarios <- ncol(qCA_gen)
 
 # Create empty list
 
