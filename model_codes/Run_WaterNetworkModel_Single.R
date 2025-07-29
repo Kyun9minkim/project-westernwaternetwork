@@ -79,15 +79,18 @@ Maximum_capacity  <- list(
 
 result <- WaterNetworkModel(input, Initial_condition, Minimum_capacity, Maximum_capacity)
 
-# Q_COCA, Q_CORC
-par(mfrow = c(1, 2), mar = c(4, 4, 2, 2))  # 1행 2열로 구성
+# 예시: 단일 시나리오 결과만 시각화할 경우
+res <- results_list[[1]]$result  # 결과만 꺼냄
 
-plot(result$t, result$Q_COCA, type = "l", col = "blue",
+# Q_COCA, Q_CORC
+par(mfrow = c(1, 2), mar = c(4, 4, 2, 2))
+
+plot(res$t, res$Q_COCA, type = "l", col = "blue",
      xlab = "Time",
      ylab = expression(Q[COCA] ~ "(" * km^3 * ")"),
      main = "Colorado to California")
 
-plot(result$t, result$Q_CORC, type = "l", col = "darkgreen",
+plot(res$t, res$Q_CORC, type = "l", col = "darkgreen",
      xlab = "Time",
      ylab = expression(Q[CORC] ~ "(" * km^3 * ")"),
      main = "Colorado to Rio Grande")
@@ -95,45 +98,37 @@ plot(result$t, result$Q_CORC, type = "l", col = "darkgreen",
 # Shortage
 par(mfrow = c(2, 2), mar = c(4, 4, 2, 2))
 
-plot(result$t, result$Shortage_CA, type = "l", col = "red",
-     xlab = "Time",
-     ylab = expression("Shortage (" * km^3 * ")"),
+plot(res$t, res$Shortage_CA, type = "l", col = "red",
+     xlab = "Time", ylab = expression("Shortage (" * km^3 * ")"),
      main = "California Shortage")
 
-plot(result$t, result$Shortage_COUP, type = "l", col = "orange",
-     xlab = "Time",
-     ylab = expression("Shortage (" * km^3 * ")"),
-     main = "Colorado Shortage")
+plot(res$t, res$Shortage_COUP, type = "l", col = "orange",
+     xlab = "Time", ylab = expression("Shortage (" * km^3 * ")"),
+     main = "Upper Colorado Shortage")
 
-plot(result$t, result$Shortage_COLOW, type = "l", col = "orange",
-     xlab = "Time",
-     ylab = expression("Shortage (" * km^3 * ")"),
-     main = "Colorado Shortage")
+plot(res$t, res$Shortage_COLOW, type = "l", col = "darkorange",
+     xlab = "Time", ylab = expression("Shortage (" * km^3 * ")"),
+     main = "Lower Colorado Shortage")
 
-plot(result$t, result$Shortage_RG, type = "l", col = "brown",
-     xlab = "Time",
-     ylab = expression("Shortage (" * km^3 * ")"),
+plot(res$t, res$Shortage_RG, type = "l", col = "brown",
+     xlab = "Time", ylab = expression("Shortage (" * km^3 * ")"),
      main = "Rio Grande Shortage")
 
 # Storage
 par(mfrow = c(2, 2), mar = c(4, 4, 2, 2))
 
-plot(result$t, result$V_CA, type = "l", col = "skyblue",
-     xlab = "Time",
-     ylab = expression(V[CA] ~ "(" * km^3 * ")"),
+plot(res$t, res$V_CA, type = "l", col = "skyblue",
+     xlab = "Time", ylab = expression(V[CA] ~ "(" * km^3 * ")"),
      main = "Storage: California")
 
-plot(result$t, result$V_COUP, type = "l", col = "green",
-     xlab = "Time",
-     ylab = expression(V[COUP] ~ "(" * km^3 * ")"),
+plot(res$t, res$V_COUP, type = "l", col = "green",
+     xlab = "Time", ylab = expression(V[COUP] ~ "(" * km^3 * ")"),
      main = "Storage: Upper Colorado")
 
-plot(result$t, result$V_COLOW, type = "l", col = "darkgreen",
-     xlab = "Time",
-     ylab = expression(V[COLOW] ~ "(" * km^3 * ")"),
+plot(res$t, res$V_COLOW, type = "l", col = "darkgreen",
+     xlab = "Time", ylab = expression(V[COLOW] ~ "(" * km^3 * ")"),
      main = "Storage: Lower Colorado")
 
-plot(result$t, result$V_RG, type = "l", col = "blue",
-     xlab = "Time",
-     ylab = expression(V[RG] ~ "(" * km^3 * ")"),
+plot(res$t, res$V_RG, type = "l", col = "blue",
+     xlab = "Time", ylab = expression(V[RG] ~ "(" * km^3 * ")"),
      main = "Storage: Rio Grande")

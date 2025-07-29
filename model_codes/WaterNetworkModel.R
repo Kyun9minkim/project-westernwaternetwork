@@ -3,7 +3,7 @@
 # -------------------------------
 # Title       : WaterNetworkModel
 # Author      : Kyungmin Kim
-# Last update : 2025-07-28
+# Last update : 2025-07-29
 # Purpose     : Preprocess California Demand Data
 # Data Source : California WRIM Data from 2007 to 2019
 # Notes       :
@@ -17,6 +17,10 @@ setwd("C:\\Users\\kyungmi1\\Documents\\Code\\project-westernwaternetwork\\model_
 # Load required libraries
 
 library(tidyverse)
+
+# Load calculate_metrics function
+
+source("calculate_metrics.R")
 
 WaterNetworkModel <- function(input,
                               Initial_condition,
@@ -49,33 +53,36 @@ WaterNetworkModel <- function(input,
     
   )
   
+  # input data setting
+  
+  Q_CO_vec <- rep(NA, time_steps)
+  Q_COUP_vec <- input$Q_COUP
+  Q_CA_vec <- input$Q_CA
+  Q_RGUP_vec <- input$Q_RGUP
+  Q_RGLOW_vec <- input$Q_RGLOW
+  Q_RCUP_vec <- input$Q_RCUP
+  Q_RCTRI_vec <- input$Q_RCTRI
+  
   state <- Initial_condition
   
   for (t in 1:time_steps) {
     # input data setting
     
-    Q_CA <- input$Q_CA[t]
-    Q_COUP <- input$Q_COUP[t]
-    Q_RGUP <- input$Q_RGUP[t]
-    Q_RGLOW <- input$Q_RGLOW[t]
-    Q_RCUP <- input$Q_RCUP[t]
-    Q_RCTRI <- input$Q_RCTRI[t]
-    
     D_CA <- input$D_CA[t]
     D_COUP <- input$D_COUP[t]
     D_COLOW <- input$D_COLOW[t]
     D_RG <- input$D_RG[t]
-    # Scaled_D_RG = input$Scaled_D_RG[t]
+    #Scaled_D_RG = input$Scaled_D_RG[t]
     
     # Update Storage
     
     # Colorado Upper
     
-    # inflow from previous time step
+    # inflow from previous time step 
     if (t > 1) {
-      inflow_COUP <- input$Q_COUP[t - 1]
+      inflow_COUP <- Q_COUP_vec[t - 1]
     } else {
-      inflow_COUP <- input$Q_COUP[t]  # 혹은 0
+      inflow_COUP <- 0 # No inflow at first time step
     }
     
     # Available volume
@@ -106,15 +113,16 @@ WaterNetworkModel <- function(input,
     Shortage_COUP <- max(D_COUP - W_COUP, 0)
     
     # Update Colorado available water
-    Q_CO <- Q_COUP - W_COUP
+    Q_CO <- Q_COUP_vec[t] - W_COUP
+    Q_CO_vec[t] <- Q_CO
     
     # Rio Grande
     
     # inflow from previous time step
     if (t > 1) {
-      inflow_RG <- input$Q_RGUP[t - 1]
+      inflow_RG <- Q_RGUP_vec[t - 1]
     } else {
-      inflow_RG <- input$Q_RGUP[t]
+      inflow_RG <- 0 # No inflow at first time step
     }
     
     # Available volume
@@ -123,8 +131,11 @@ WaterNetworkModel <- function(input,
     # Total demand for Rio Grande
     total_RG_demand <- D_RG
     
+    
+    MinFlow_RGLOW <- 0.005137836
+    
     # Available local supply 
-    local_supply_RG <- input$Q_RGUP[t] - input$Q_RGLOW[t] - input$Q_RCUP[t] - input$Q_RCTRI[t]
+    local_supply_RG <- Q_RGUP_vec[t] - max(MinFlow_RGLOW, Q_RGLOW_vec[t]) + Q_RCUP_vec[t] + Q_RCTRI_vec[t]
     
     # Requested import from Colorado
     Q_CORC_needed <- max(total_RG_demand - local_supply_RG, 0)
@@ -170,9 +181,9 @@ WaterNetworkModel <- function(input,
     
     # inflow from previous time step
     if (t > 1) {
-      inflow_CA <- input$Q_CA[t - 1]
+      inflow_CA <- Q_CA_vec[t - 1]
     } else {
-      inflow_CA <- input$Q_CA[t]
+      inflow_CA <- 0 # No inflow at first time step
     }
     
     # Available volume
@@ -220,13 +231,13 @@ WaterNetworkModel <- function(input,
     # Calculate shortage
     Shortage_CA <- max(D_CA - W_CA, 0)
     
-    # Colorado Upper
+    # Colorado Lower
     
     # inflow from previous time step
     if (t > 1) {
-      inflow_COLOW <- Q_CO
+      inflow_COLOW <- Q_CO_vec[t - 1]
     } else {
-      inflow_COLOW <- Q_CO[t]  # 혹은 0
+      inflow_COLOW <- 0  # 혹은 0
     }
     
     # Available volume
@@ -281,5 +292,19 @@ WaterNetworkModel <- function(input,
       )
     }
   }
-  return(result)
+  # Calculate metrics
+  
+  metrics <- list(
+    CA = calculate_metrics(input$D_CA[(spinup + 1):time_steps], result$Shortage_CA),
+    COUP = calculate_metrics(input$D_COUP[(spinup + 1):time_steps], result$Shortage_COUP),
+    COLOW = calculate_metrics(input$D_COLOW[(spinup + 1):time_steps], result$Shortage_COLOW),
+    RG = calculate_metrics(input$D_RG[(spinup + 1):time_steps], result$Shortage_RG)
+  )
+  
+  return(list(result = result, metrics = metrics))
+  
 }
+
+
+
+
