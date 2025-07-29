@@ -2,7 +2,7 @@
 # -------------------------------
 # Title       : Run_WaterNetworkModel
 # Author      : Kyungmin Kim
-# Last update : 2025-07-08
+# Last update : 2025-07-28
 # Purpose     : Visualize Water Network Model
 # Data Source : 
 # Notes       :
@@ -10,8 +10,8 @@
 
 # Set working directory
 
-setwd("/Users/kyungminkim/Code/project-westernwaternetwork/model_codes") #Mac
-#setwd("C:\\Users\\kyungmi1\\Documents\\Code\\project-westernwaternetwork\\model_codes") #Window
+#setwd("/Users/kyungminkim/Code/project-westernwaternetwork/model_codes") #Mac
+setwd("C:\\Users\\kyungmi1\\Documents\\Code\\project-westernwaternetwork\\model_codes") #Window
 
 # Load required libraries
 
@@ -21,71 +21,118 @@ library(tidyverse)
 
 source("WaterNetworkModel.R")
 
-# Initial conditions & Maximum capacity
-
-Initial_condition <- list(
-  S_CA = 1, #California 
-  S_CO1 = 1, #Lake Powell 
-  S_CO2 = 1, #Lake Mead
-  S_RG = 1 #Heron Reservoir in Rio Grande
-)
+# Load input data
+input_data <- read.csv("input_data.csv", header = TRUE)
+qCA_gen <- read.csv("qCA-100x20-monthly.csv", header = TRUE)[121:240, 1:100]
+qCO_gen <- read.csv("qCO-100x20-monthly.csv", header = TRUE)[121:240, 1:100]
+qRG_gen <- read.csv("qRG-100x20-monthly.csv", header = TRUE)[121:240, 1:100]
 
 
-Maximum_capacity <- list(
-  S_CA = 5, #California 
-  S_CO1 = 5, #Lake Powell 
-  S_CO2 = 5, #Lake Mead
-  S_RG = 5 #Heron Reservoir in Rio Grande
-)
-
-# load input files 
-
-D_CA <- read.csv("input_data.csv", header = TRUE)[["D_CA"]]
-D_COUP <- read.csv("input_data.csv", header = TRUE)[["D_COUP"]]
-D_COLOW <- read.csv("input_data.csv", header = TRUE)[["D_COLOW"]]
-D_RG <- read.csv("input_data.csv", header = TRUE)[["D_RG"]]
-Scaled_D_RG <- read.csv("input_data.csv", header = TRUE)[["Scaled_D_RG"]]
-
-# Read input data and extract 120 rows 100 columns
-#Q_CA <- read.csv("../Streamflow_Generation/modifiedgenerator/synthetic/qCA-100x20-monthly.csv", header = FALSE)[121:240, 1:100]
-#Q_COUP <- read.csv("../Streamflow_Generation/modifiedgenerator/synthetic/qCO-100x20-monthly.csv", header = FALSE)[121:240, 1:100]
-#Q_RGUP <- read.csv("../Streamflow_Generation/modifiedgenerator/synthetic/qRG-100x20-monthly.csv", header = FALSE)[121:240, 1:100]
-
-Q_CA <- read.csv("input_data.csv", header = TRUE)[["Q_CA"]]
-Q_COUP <- read.csv("input_data.csv", header = TRUE)[["Q_COUP"]]
-Q_RGUP <- read.csv("input_data.csv", header = TRUE)[["Q_RGUP"]]
-Q_RGLOW <- read.csv("input_data.csv", header = TRUE)[["Q_RGLOW"]]
-Q_RCUP <- read.csv("input_data.csv", header = TRUE)[["Q_RCUP"]]
-Q_RCTRI <- read.csv("input_data.csv", header = TRUE)[["Q_RCTRI"]]
-
-# number of scenarios
-
-n_scenarios <- ncol(Q_CA)
-
-# number of scenarios
-
-input_list <- list()
-
-for (i in 1:n_scenarios){
-  input_df <- data.frame(
-    Q_CA = Q_CA[[i]],
-    Q_COUP = Q_COUP[[i]],
-    Q_RGUP = Q_RGUP[[i]],
-    Q_RGLOW = Q_RGLOW,
-    Q_RCUP = Q_RCUP,
-    Q_RCTRI = Q_RCTRI,
-
-    D_CA = D_CA,
-    D_COUP = D_COUP,
-    D_COLOW = D_COLOW,
-    D_RG = D_RG
-    #Scaled_D_RG = Scaled_D_RG,
-  )
-  input_list[[i]] <- input_df
-}
+# Create empty list
 
 results_list <- list()
 
+# Run model for each scenario (i from 1 to 100)
 for (i in 1:n_scenarios) {
-  results_list[[i]] <- WaterNetworkModel(input_list[[i]], Initial_condition, Maximum_capacity)
+
+input <- list(
+  Q_CA = qCA_gen[[i]],
+  Q_COUP = qCO_gen[[i]],
+  Q_RGUP = qRG_gen[[i]],
+  Q_RGLOW = input_data$Q_RGLOW,
+  Q_RCUP = input_data$Q_RCUP,
+  Q_RCTRI = input_data$Q_RCTRI,
+  
+  D_CA = input_data$D_CA,
+  D_COUP = input_data$D_COUP,
+  D_COLOW = input_data$D_COLOW, 
+  D_RG = input_data$D_RG
+  #Scaled_D_RG = input_data$Scaled_D_RG
+  
+)
+
+# Initial conditions & Minimum_capacity & Maximum_capacityimum capacity
+
+Initial_condition <- list(
+  V_CA = 1, #California 
+  V_COUP = 1, #Lake Powell 
+  V_COLOW = 1, #Lake Mead
+  V_RG = 1 #Heron Reservoir in Rio Grande
+)
+
+Minimum_capacity <- list(
+  Minimum_capacity_CA = 1, #California 
+  Minimum_capacity_COUP = 3, #Lake Powell 
+  Minimum_capacity_COLOW = 3, #Lake Mead
+  Minimum_capacity_RG = 3 #Heron Reservoir in Rio Grande
+)
+
+Maximum_capacity  <- list(
+  Maximum_capacity_CA = 5, #California 
+  Maximum_capacity_COUP = 5, #Lake Powell 
+  Maximum_capacity_COLOW = 5, #Lake Mead
+  Maximum_capacity_RG = 5 #Heron Reservoir in Rio Grande
+)
+
+result <- WaterNetworkModel(input, Initial_condition, Minimum_capacity, Maximum_capacity)
+results_list[[i]] <- result
 }
+
+# Q_COCA, Q_CORC
+par(mfrow = c(1, 2), mar = c(4, 4, 2, 2))  # 1행 2열로 구성
+
+plot(result$t, result$Q_COCA, type = "l", col = "blue",
+     xlab = "Time",
+     ylab = expression(Q[COCA] ~ "(" * km^3 * ")"),
+     main = "Colorado to California")
+
+plot(result$t, result$Q_CORC, type = "l", col = "darkgreen",
+     xlab = "Time",
+     ylab = expression(Q[CORC] ~ "(" * km^3 * ")"),
+     main = "Colorado to Rio Grande")
+
+# Shortage
+par(mfrow = c(2, 2), mar = c(4, 4, 2, 2))
+
+plot(result$t, result$Shortage_CA, type = "l", col = "red",
+     xlab = "Time",
+     ylab = expression("Shortage (" * km^3 * ")"),
+     main = "California Shortage")
+
+plot(result$t, result$Shortage_COUP, type = "l", col = "orange",
+     xlab = "Time",
+     ylab = expression("Shortage (" * km^3 * ")"),
+     main = "Colorado Shortage")
+
+plot(result$t, result$Shortage_COLOW, type = "l", col = "orange",
+     xlab = "Time",
+     ylab = expression("Shortage (" * km^3 * ")"),
+     main = "Colorado Shortage")
+
+plot(result$t, result$Shortage_RG, type = "l", col = "brown",
+     xlab = "Time",
+     ylab = expression("Shortage (" * km^3 * ")"),
+     main = "Rio Grande Shortage")
+
+# Storage
+par(mfrow = c(2, 2), mar = c(4, 4, 2, 2))
+
+plot(result$t, result$V_CA, type = "l", col = "skyblue",
+     xlab = "Time",
+     ylab = expression(V[CA] ~ "(" * km^3 * ")"),
+     main = "Storage: California")
+
+plot(result$t, result$V_COUP, type = "l", col = "green",
+     xlab = "Time",
+     ylab = expression(V[COUP] ~ "(" * km^3 * ")"),
+     main = "Storage: Upper Colorado")
+
+plot(result$t, result$V_COLOW, type = "l", col = "darkgreen",
+     xlab = "Time",
+     ylab = expression(V[COLOW] ~ "(" * km^3 * ")"),
+     main = "Storage: Lower Colorado")
+
+plot(result$t, result$V_RG, type = "l", col = "blue",
+     xlab = "Time",
+     ylab = expression(V[RG] ~ "(" * km^3 * ")"),
+     main = "Storage: Rio Grande")
