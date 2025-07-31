@@ -79,8 +79,7 @@ Maximum_capacity  <- list(
 
 result <- WaterNetworkModel(input, Initial_condition, Minimum_capacity, Maximum_capacity)
 
-# 예시: 단일 시나리오 결과만 시각화할 경우
-res <- results_list[[1]]$result  # 결과만 꺼냄
+res <- result$result
 
 # Q_COCA, Q_CORC
 par(mfrow = c(1, 2), mar = c(4, 4, 2, 2))
@@ -132,3 +131,7 @@ plot(res$t, res$V_COLOW, type = "l", col = "darkgreen",
 plot(res$t, res$V_RG, type = "l", col = "blue",
      xlab = "Time", ylab = expression(V[RG] ~ "(" * km^3 * ")"),
      main = "Storage: Rio Grande")
+
+#statistic
+
+metrics_summary <- result$metrics

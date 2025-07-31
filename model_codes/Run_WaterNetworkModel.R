@@ -66,21 +66,21 @@ Initial_condition <- list(
   V_CA = 3, #California 
   V_COUP = 11, #Lake Powell 
   V_COLOW = 8, #Lake Mead
-  V_RG = 0.06 #Heron Reservoir in Rio Grande
+  V_RG = 0.06 #Cochiti Reservoir in Rio Grande
 )
 
 Minimum_capacity <- list(
   Minimum_capacity_CA = 1, #California 
   Minimum_capacity_COUP = 4, #Lake Powell 
   Minimum_capacity_COLOW = 7, #Lake Mead
-  Minimum_capacity_RG = 0 #Heron Reservoir in Rio Grande
+  Minimum_capacity_RG = 0 #Cochiti Reservoir in Rio Grande
 )
 
 Maximum_capacity  <- list(
   Maximum_capacity_CA = 5, #California 
   Maximum_capacity_COUP = 30, #Lake Powell 
   Maximum_capacity_COLOW = 14, #Lake Mead
-  Maximum_capacity_RG = 0.88 #Heron Reservoir in Rio Grande
+  Maximum_capacity_RG = 0.88 #Cochiti Reservoir in Rio Grande
 )
 
 result <- WaterNetworkModel(input, Initial_condition, Minimum_capacity, Maximum_capacity)
