@@ -103,17 +103,15 @@ WaterNetworkModel <- function(input,
     # Update storage volume
     state$V_COUP <- available_COUP - W_COUP
     
-    # Cap storage at maximum capacity
-    
-    if (state$V_COUP > Maximum_capacity$Maximum_capacity_COUP) {
-      state$V_COUP <- Maximum_capacity$Maximum_capacity_COUP
-    }
+    # Cap storage at maximum capacity and compute spill
+    spill_COUP <- max(state$V_COUP - Maximum_capacity$Maximum_capacity_COUP, 0)
+    state$V_COUP <- min(state$V_COUP, Maximum_capacity$Maximum_capacity_COUP)
     
     # Calculate shortage
     Shortage_COUP <- max(D_COUP - W_COUP, 0)
     
     # Update Colorado available water
-    Q_CO <- Q_COUP_vec[t] - W_COUP
+    Q_CO <- Q_COUP_vec[t] - W_COUP + spill_COUP
     Q_CO_vec[t] <- Q_CO
   
     
@@ -225,9 +223,8 @@ WaterNetworkModel <- function(input,
     state$V_RG <- total_available_RG - W_RG
     
     # Cap storage at maximum capacity
-    if (state$V_RG > Maximum_capacity$Maximum_capacity_RG) {
-      state$V_RG <- Maximum_capacity$Maximum_capacity_RG
-    }
+    spill_RG <- max(state$V_RG - Maximum_capacity$Maximum_capacity_RG, 0)
+    state$V_RG <- min(state$V_RG, Maximum_capacity$Maximum_capacity_RG)
     
     # Calculate shortage
     Shortage_RG <- max(D_RG - W_RG, 0)
@@ -261,9 +258,8 @@ WaterNetworkModel <- function(input,
     
     # Cap storage at maximum capacity
     
-    if (state$V_COLOW > Maximum_capacity$Maximum_capacity_COLOW) {
-      state$V_COLOW <- Maximum_capacity$Maximum_capacity_COLOW
-    }
+    spill_COLOW <- max(state$V_COLOW - Maximum_capacity$Maximum_capacity_COLOW, 0)
+    state$V_COLOW <- min(state$V_COLOW, Maximum_capacity$Maximum_capacity_COLOW)
     
     # Calculate shortage
     Shortage_COLOW <- max(D_COLOW - W_COLOW, 0)

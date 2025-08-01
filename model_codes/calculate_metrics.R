@@ -1,3 +1,14 @@
+
+
+# -------------------------------
+# Title       : calculate_metrics
+# Author      : Kyungmin Kim
+# Last update : 2025-07-29
+# Purpose     : Calculate the Robustness Metrics
+# Data Source : 
+# Notes       :
+# -------------------------------
+
 calculate_metrics <- function(demand, shortage) {
   supplied <- demand - shortage
   list(
