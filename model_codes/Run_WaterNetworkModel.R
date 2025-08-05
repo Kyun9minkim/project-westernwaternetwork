@@ -221,6 +221,9 @@ for (j in 1:length(plot_list)) {
 # Shortage % Plot (Shortage / Demand) * 100
 par(mfrow = c(2, 2), mar = c(4, 4, 2, 2))
 
+shortage_vars <- c("Shortage_CA", "Shortage_COUP", "Shortage_COLOW", "Shortage_RG")
+demand_vars <- c("D_CA", "D_COUP", "D_COLOW", "D_RG")
+
 for (j in 1:4) {
   var <- shortage_vars[j]
   demand <- input_data[[demand_vars[j]]]
