@@ -59,36 +59,63 @@ for (i in 1:n_scenarios) {
     
   )
   
-  # Initial conditions & Minimum_capacity & Maximum_capacityimum capacity
+  # Initial conditions & Minimum_capacity & Maximum_capacity
   
   Initial_condition <- list(
-    V_CA = 3,
+    
     #California
-    V_COUP = 11,
+    V_CA = 30,
+    
     #Lake Powell
-    V_COLOW = 8,
+    V_COUP = 30,
+    
     #Lake Mead
-    V_RG = 0.06 #Cochiti Reservoir in Rio Grande
+    V_COLOW = 32,
+    
+    #Cochiti Reservoir in Rio Grande
+    V_RG = 0.88, 
+    
+    #Heron Reservoir
+    V_HE = 0.49462548 
   )
   
   Minimum_capacity <- list(
-    Minimum_capacity_CA = 0,
+    
     #California
-    Minimum_capacity_COUP = 4,
+    Minimum_capacity_CA = 0,
+    
     #Lake Powell
-    Minimum_capacity_COLOW = 7,
+    Minimum_capacity_COUP = 0,
+    
     #Lake Mead
-    Minimum_capacity_RG = 0 #Cochiti Reservoir in Rio Grande
+    Minimum_capacity_COLOW = 0,
+    
+    #Cochiti Reservoir in Rio Grande
+    Minimum_capacity_RG = 0, 
+    
+    #Heron Reservoir
+    Minimum_capacity_HE = 0 
+    
+    
   )
   
   Maximum_capacity  <- list(
-    Maximum_capacity_CA = 5,
+   
     #California
-    Maximum_capacity_COUP = 30,
+    Maximum_capacity_CA = 30,
+    
     #Lake Powell
-    Maximum_capacity_COLOW = 14,
+    Maximum_capacity_COUP = 30,
+    
     #Lake Mead
-    Maximum_capacity_RG = 0.88 #Cochiti Reservoir in Rio Grande
+    Maximum_capacity_COLOW = 32,
+    
+    #Cochiti Reservoir in Rio Grande
+    Maximum_capacity_RG = 0.88, 
+    
+    #Heron Reservoir
+    Maximum_capacity_HE = 0.49462548
+ 
   )
   
   result <- WaterNetworkModel(input,
@@ -98,7 +125,7 @@ for (i in 1:n_scenarios) {
   results_list[[i]] <- result
 }
 
-# Q_COCA, Q_CORC
+# Q_COCA, Q_HERC
 par(mfrow = c(1, 2), mar = c(4, 4, 2, 2))  # 1행 2열로 구성
 
 # Q_COCA
@@ -118,20 +145,20 @@ for (i in 1:length(results_list)) {
         col = rgb(0, 0, 1, alpha = 0.2))  # semi-transparent blue
 }
 
-# Q_CORC
+# Q_HERC
 plot(
   NULL,
   xlim = range(results_list[[1]]$result$t),
   ylim = range(sapply(results_list, function(x)
-    x$result$Q_CORC), na.rm = TRUE),
+    x$result$Q_HERC), na.rm = TRUE),
   xlab = "Time",
-  ylab = expression(Q[CORC] ~ "(" * km^3 * ")"),
+  ylab = expression(Q[HERC] ~ "(" * km^3 * ")"),
   main = "Colorado to Rio Grande"
 )
 
 for (i in 1:length(results_list)) {
   lines(results_list[[i]]$result$t,
-        results_list[[i]]$result$Q_CORC,
+        results_list[[i]]$result$Q_HERC,
         col = rgb(0, 0.4, 0, alpha = 0.2))  # semi-transparent green
 }
 
@@ -165,13 +192,13 @@ for (j in 1:4) {
 }
 
 # Storage
-par(mfrow = c(2, 2), mar = c(4, 4, 2, 2))
+par(mfrow = c(2, 3), mar = c(4, 4, 2, 2))  # 2행 3열로 변경
 
-plot_list <- c("V_CA", "V_COUP", "V_COLOW", "V_RG")
-colors <- c("skyblue", "green", "darkgreen", "blue")
-titles <- c("California", "Upper Colorado", "Lower Colorado", "Rio Grande")
+plot_list <- c("V_CA", "V_COUP", "V_COLOW", "V_RG", "V_HE")
+colors <- c("skyblue", "green", "darkgreen", "blue", "purple")
+titles <- c("California", "Upper Colorado", "Lower Colorado", "Rio Grande", "Heron")
 
-for (j in 1:4) {
+for (j in 1:length(plot_list)) {
   var <- plot_list[j]
   plot(
     NULL,
@@ -182,13 +209,45 @@ for (j in 1:4) {
     ylab = expression("Storage (" * km^3 * ")"),
     main = paste(titles[j], "Storage")
   )
-    
-    for (i in 1:length(results_list)) {
-      lines(results_list[[i]]$result$t,
-            results_list[[i]]$result[[var]],
-            col = adjustcolor(colors[j], alpha.f = 0.3))
-    }
+  
+  for (i in 1:length(results_list)) {
+    lines(results_list[[i]]$result$t,
+          results_list[[i]]$result[[var]],
+          col = adjustcolor(colors[j], alpha.f = 0.3))
+  }
 }
+
+
+# Shortage % Plot (Shortage / Demand) * 100
+par(mfrow = c(2, 2), mar = c(4, 4, 2, 2))
+
+for (j in 1:4) {
+  var <- shortage_vars[j]
+  demand <- input_data[[demand_vars[j]]]
+  
+  plot(
+    NULL,
+    xlim = range(results_list[[1]]$result$t),
+    ylim = c(0, 100),
+    xlab = "Time",
+    ylab = "Shortage (% of demand)",
+    main = paste(titles[j], "Shortage %")
+  )
+  
+  for (i in 1:length(results_list)) {
+    shortage <- results_list[[i]]$result[[var]]
+    t <- results_list[[i]]$result$t
+    demand_trimmed <- demand[1:length(t)]
+    
+    shortage_percent <- 100 * shortage / demand_trimmed
+    
+    lines(t,
+          shortage_percent,
+          col = adjustcolor(colors[j], alpha.f = 0.3))
+  }
+}
+
+
 
 #statistic
 
@@ -216,3 +275,7 @@ for (Local in Locals) {
   # 저장
   metrics_summary[[Local]] <- stats
 }
+
+
+
+

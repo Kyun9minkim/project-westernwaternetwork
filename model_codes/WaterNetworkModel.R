@@ -4,8 +4,8 @@
 # Title       : WaterNetworkModel
 # Author      : Kyungmin Kim
 # Last update : 2025-07-29
-# Purpose     : Preprocess California Demand Data
-# Data Source : California WRIM Data from 2007 to 2019
+# Purpose     : Simulate Western Water Network
+# Data Source : input data
 # Notes       :
 # -------------------------------
 
@@ -37,6 +37,7 @@ WaterNetworkModel <- function(input,
     V_COUP = NA,
     V_COLOW = NA,
     V_RG = NA,
+    V_HE = NA,
     
     W_CA = NA,
     W_COUP = NA,
@@ -44,7 +45,8 @@ WaterNetworkModel <- function(input,
     W_RG = NA,
     
     Q_COCA = NA,
-    Q_CORC = NA,
+    Q_COHE = NA,
+    Q_HERC = NA,
     
     Shortage_CA = NA,
     Shortage_COUP = NA,
@@ -76,7 +78,9 @@ WaterNetworkModel <- function(input,
     
     # Update Storage
     
-    # Colorado Upper
+    # ================================
+    # =========Colorado Upper=========
+    # ================================
     
     # inflow from previous time step 
     if (t > 1) {
@@ -111,12 +115,97 @@ WaterNetworkModel <- function(input,
     Shortage_COUP <- max(D_COUP - W_COUP, 0)
     
     # Update Colorado available water
-    Q_CO <- Q_COUP_vec[t] - W_COUP + spill_COUP
-    Q_CO_vec[t] <- Q_CO
+    Q_CO <- max(Q_COUP_vec[t] - W_COUP + spill_COUP, 0)
   
+
+    
+    # ================================
+    # ===========Rio Grande===========
+    # ================================
+    
+    # inflow from previous time step
+    if (t > 1) {
+      inflow_RG <- Q_RGUP_vec[t - 1]
+    } else {
+      inflow_RG <- 0 # No inflow at first time step
+    }
+    
+    # Available volume
+    available_RG <- state$V_RG + inflow_RG
+    
+    # Total demand for Rio Grande
+    total_RG_demand <- D_RG
+    
+    # Environmental minimum flow
+    MinFlow_RGLOW <- 0.001834941
+    
+    # Available local supply 
+    local_supply_RG <- max(Q_RGUP_vec[t] - max(MinFlow_RGLOW, Q_RGLOW_vec[t]) + Q_RCUP_vec[t] + Q_RCTRI_vec[t], 0)
+    
+    # Requested import from Colorado
+    Q_CORG_needed <- max(total_RG_demand - local_supply_RG, 0)
+    
+    # ================================
+    # ===========Heron in RG==========
+    # ================================    
+    
+    # Steady inflow from CO to HE
+    Q_COHE <- 0.009230542
+    
+    # Steady inflow from CO to HE
+    state$V_HE <- state$V_HE + Q_COHE
+    
+    available_HE <- state$V_HE
+    
+    if (available_HE > Q_CORG_needed + Minimum_capacity$Minimum_capacity_HE) {
+      Q_HERC <- Q_CORG_needed
+    } else if (available_HE > Minimum_capacity$Minimum_capacity_HE) {
+      Q_HERC <- available_HE - Minimum_capacity$Minimum_capacity_HE
+    } else {
+      Q_HERC <- 0
+    }
+    
+    state$V_HE <- available_HE - Q_HERC
+    spill_HE <- max(state$V_HE - Maximum_capacity$Maximum_capacity_HE, 0)
+    state$V_HE <- min(state$V_HE, Maximum_capacity$Maximum_capacity_HE)
+    
+    # Update Colorado stream flow (Subtract steady inflow from Colorado water balance)
+    
+    Q_CO <- Q_CO - Q_COHE
+    
+    # ================================
+    # ===========Rio Grande===========
+    # ================================
     
     
-    # California (Senior Act)
+    # Total available water in RG
+    total_available_RG <- available_RG + Q_HERC
+    
+    # Determine withdrawal amount
+    if (total_available_RG > D_RG + Minimum_capacity$Minimum_capacity_RG) {
+      # Fully meet demand
+      W_RG <- D_RG
+    } else if (total_available_RG > Minimum_capacity$Minimum_capacity_RG) {
+      # Partially meet demand
+      W_RG <- total_available_RG - Minimum_capacity$Minimum_capacity_RG
+    } else {
+      # Not enough water to withdraw
+      W_RG <- 0
+    }
+    
+    # Update storage volume
+    state$V_RG <- total_available_RG - W_RG
+    
+    # Cap storage at maximum capacity
+    spill_RG <- max(state$V_RG - Maximum_capacity$Maximum_capacity_RG, 0)
+    state$V_RG <- min(state$V_RG, Maximum_capacity$Maximum_capacity_RG)
+    
+    # Calculate shortage
+    Shortage_RG <- max(D_RG - W_RG, 0)
+    
+    # ================================
+    # ===========California===========
+    # ================================
     
     # inflow from previous time step
     if (t > 1) {
@@ -170,66 +259,14 @@ WaterNetworkModel <- function(input,
     # Calculate shortage
     Shortage_CA <- max(D_CA - W_CA, 0)
     
-    # Rio Grande
     
-    # inflow from previous time step
-    if (t > 1) {
-      inflow_RG <- Q_RGUP_vec[t - 1]
-    } else {
-      inflow_RG <- 0 # No inflow at first time step
-    }
+    # ================================
+    # =========Colorado Lower=========
+    # ================================
+
+    # update Q_CO to calculate COLOW
     
-    # Available volume
-    available_RG <- state$V_RG + inflow_RG
-    
-    # Total demand for Rio Grande
-    total_RG_demand <- D_RG
-    
-    
-    MinFlow_RGLOW <- 0.001834941
-    
-    # Available local supply 
-    local_supply_RG <- Q_RGUP_vec[t] - max(MinFlow_RGLOW, Q_RGLOW_vec[t]) + Q_RCUP_vec[t] + Q_RCTRI_vec[t]
-    
-    # Requested import from Colorado
-    Q_CORC_needed <- max(total_RG_demand - local_supply_RG, 0)
-    
-    # Actual volume received from Colorado
-    if (Q_CO >= Q_CORC_needed) {
-      Q_CORC <- Q_CORC_needed
-    } else {
-      Q_CORC <- Q_CO
-    }
-    
-    # Update Colorado available water
-    Q_CO <- Q_CO - Q_CORC
-    
-    # Total available water in RG
-    total_available_RG <- available_RG + Q_CORC
-    
-    # Determine withdrawal amount
-    if (total_available_RG > D_RG + Minimum_capacity$Minimum_capacity_RG) {
-      # Fully meet demand
-      W_RG <- D_RG
-    } else if (total_available_RG > Minimum_capacity$Minimum_capacity_RG) {
-      # Partially meet demand
-      W_RG <- total_available_RG - Minimum_capacity$Minimum_capacity_RG
-    } else {
-      # Not enough water to withdraw
-      W_RG <- 0
-    }
-    
-    # Update storage volume
-    state$V_RG <- total_available_RG - W_RG
-    
-    # Cap storage at maximum capacity
-    spill_RG <- max(state$V_RG - Maximum_capacity$Maximum_capacity_RG, 0)
-    state$V_RG <- min(state$V_RG, Maximum_capacity$Maximum_capacity_RG)
-    
-    # Calculate shortage
-    Shortage_RG <- max(D_RG - W_RG, 0)
-    
-    # Colorado Lower
+    Q_CO_vec[t] <- Q_CO
     
     # inflow from previous time step
     if (t > 1) {
@@ -264,6 +301,9 @@ WaterNetworkModel <- function(input,
     # Calculate shortage
     Shortage_COLOW <- max(D_COLOW - W_COLOW, 0)
     
+    # Update Colorado available water
+    Q_CO <- max(Q_CO_vec[t] - W_COLOW + spill_COLOW, 0)
+    
     
     # Save results
     if (t > spinup) {
@@ -273,6 +313,7 @@ WaterNetworkModel <- function(input,
         state$V_COUP,
         state$V_COLOW,
         state$V_RG,
+        state$V_HE,
         
         W_CA,
         W_COUP,
@@ -280,7 +321,8 @@ WaterNetworkModel <- function(input,
         W_RG,
         
         Q_COCA,
-        Q_CORC,
+        Q_COHE,
+        Q_HERC,
         
         Shortage_CA,
         Shortage_COUP,
