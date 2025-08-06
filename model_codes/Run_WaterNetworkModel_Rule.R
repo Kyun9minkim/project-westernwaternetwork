@@ -1,8 +1,8 @@
 
 # -------------------------------
-# Title       : Run_WaterNetworkModel
+# Title       : Run_WaterNetworkModel_Rule
 # Author      : Kyungmin Kim
-# Last update : 2025-07-29
+# Last update : 2025-08-06
 # Purpose     : Visualize Water Network Model
 # Data Source : 
 # Notes       :
@@ -19,7 +19,7 @@ library(tidyverse)
 
 # Load Function
 
-source("WaterNetworkModel.R")
+source("WaterNetworkModel_Rule.R")
 source("calculate_metrics.R")
 
 # Load input data
@@ -64,19 +64,19 @@ for (i in 1:n_scenarios) {
   Initial_condition <- list(
     
     #California
-    V_CA = 30,
+    V_CA = 30/2,
     
     #Lake Powell
-    V_COUP = 30,
+    V_COUP = 31.0419*0.32,
     
     #Lake Mead
-    V_COLOW = 32,
+    V_COLOW = 34.06872*0*30,
     
     #Cochiti Reservoir in Rio Grande
-    V_RG = 0.88, 
+    V_RG = 0.9519*0.13, 
     
     #Heron Reservoir
-    V_HE = 0.49462548 
+    V_HE = 0.49462548*0.77 
   )
   
   Minimum_capacity <- list(
@@ -85,48 +85,134 @@ for (i in 1:n_scenarios) {
     Minimum_capacity_CA = 0,
     
     #Lake Powell
-    Minimum_capacity_COUP = 0,
+    Minimum_capacity_COUP = 2.135507889,
     
     #Lake Mead
-    Minimum_capacity_COLOW = 0,
+    Minimum_capacity_COLOW = 3.14167356,
     
     #Cochiti Reservoir in Rio Grande
-    Minimum_capacity_RG = 0, 
+    Minimum_capacity_RG = 0.054432239, 
     
     #Heron Reservoir
-    Minimum_capacity_HE = 0 
+    Minimum_capacity_HE = 0.001652863
+ 
     
     
   )
   
+  Tier1_threshold <- list(
+    CA = 11.8426,
+    COLOW = 11.8426
+  )
+  
+  Tier1_contribution <- list(
+    CA = 0,
+    COLOW = 0.024772
+  )
+  
+  Tier2a_threshold <- list(
+    CA = 9.476827,
+    COLOW = 9.476827
+  )
+  
+  Tier2a_contribution <- list(
+    CA = 0,
+    COLOW = 0.057871
+  )
+  
+  Tier2b1_threshold <- list(
+    CA = 9.036744,
+    COLOW = 9.036744
+  )
+  
+  Tier2b1_contribution <- list(
+    CA = 0.020558,
+    COLOW = 0.066916
+  )
+  
+  Tier2b2_threshold <- list(
+    CA = 8.607223,
+    COLOW = 8.607223
+  )
+  
+  Tier2b2_contribution <- list(
+    CA = 0.025698,
+    COLOW = 0.076373
+  )
+  
+  Tier2b3_threshold <- list(
+    CA = 8.18784,
+    COLOW = 8.18784
+  )
+  
+  Tier2b3_contribution <- list(
+    CA = 0.030837,
+    COLOW = 0.077195
+  )
+  
+  Tier2b4_threshold <- list(
+    CA = 7.777091,
+    COLOW = 7.777091
+  )
+  
+  Tier2b4_contribution <- list(
+    CA = 0.035977,
+    COLOW = 0.078943
+  )
+  
+  Tier3_threshold <- list(
+    CA = 7.377444,
+    COLOW = 7.377444
+  )
+  
+  Tier3_contribution <- list(
+    CA = 0.035977,
+    COLOW = 0.092511
+  )
+  
+  
   Maximum_capacity  <- list(
-   
-    #California
+    
+    #California???
     Maximum_capacity_CA = 30,
     
     #Lake Powell
-    Maximum_capacity_COUP = 30,
+    Maximum_capacity_COUP = 31.0419,
     
-    #Lake Mead
-    Maximum_capacity_COLOW = 32,
+    #Lake Mead, calculated via maximum water surface
+    Maximum_capacity_COLOW = 34.06872, 
     
     #Cochiti Reservoir in Rio Grande
-    Maximum_capacity_RG = 0.88, 
+    Maximum_capacity_RG = 0.9519, 
     
     #Heron Reservoir
     Maximum_capacity_HE = 0.49462548
- 
+    
   )
   
   result <- WaterNetworkModel(input,
                               Initial_condition,
                               Minimum_capacity,
+                              Tier1_threshold,
+                              Tier1_contribution,
+                              Tier2a_threshold,
+                              Tier2a_contribution,
+                              Tier2b1_threshold,
+                              Tier2b1_contribution,
+                              Tier2b2_threshold,
+                              Tier2b2_contribution,
+                              Tier2b3_threshold,
+                              Tier2b3_contribution,
+                              Tier2b4_threshold,
+                              Tier2b4_contribution,
+                              Tier3_threshold,
+                              Tier3_contribution,
                               Maximum_capacity)
   results_list[[i]] <- result
 }
 
 # Q_COCA, Q_HERC
-par(mfrow = c(1, 2), mar = c(4, 4, 2, 2))  
+par(mfrow = c(1, 2), mar = c(4, 4, 2, 2)) 
 
 # Q_COCA
 plot(
@@ -192,7 +278,7 @@ for (j in 1:4) {
 }
 
 # Storage
-par(mfrow = c(2, 3), mar = c(4, 4, 2, 2)) 
+par(mfrow = c(2, 3), mar = c(4, 4, 2, 2))  
 
 plot_list <- c("V_CA", "V_COUP", "V_COLOW", "V_RG", "V_HE")
 colors <- c("skyblue", "green", "darkgreen", "blue", "purple")
@@ -252,7 +338,6 @@ for (j in 1:4) {
 
 
 
-
 #statistic
 
 Locals <- c("CA", "COUP", "COLOW", "RG")
@@ -262,8 +347,8 @@ metrics_summary <- list()
 
 # Local Metric statistic
 for (Local in Locals) {
-  
-  Local_metrics <- lapply(results_list, function(x)
+
+    Local_metrics <- lapply(results_list, function(x)
     x$metrics[[Local]])
   
   Local_df <- do.call(rbind, lapply(Local_metrics, as.data.frame))
@@ -274,6 +359,10 @@ for (Local in Locals) {
     sd = apply(Local_df, 2, sd, na.rm = TRUE),
     range = apply(Local_df, 2, range, na.rm = TRUE)
   )
-  
+
   metrics_summary[[Local]] <- stats
 }
+
+
+
+

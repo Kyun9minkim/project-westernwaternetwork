@@ -1,9 +1,9 @@
 
 
 # -------------------------------
-# Title       : WaterNetworkModel
+# Title       : WaterNetworkModel_Rule
 # Author      : Kyungmin Kim
-# Last update : 2025-07-29
+# Last update : 2025-08-06
 # Purpose     : Simulate Western Water Network
 # Data Source : input data
 # Notes       :
@@ -25,7 +25,21 @@ source("Sigmoid_function.R")
 
 WaterNetworkModel <- function(input,
                               Initial_condition,
-                              Minimum_capacity, 
+                              Minimum_capacity,
+                              Tier1_threshold,
+                              Tier1_contribution,
+                              Tier2a_threshold,
+                              Tier2a_contribution,
+                              Tier2b1_threshold,
+                              Tier2b1_contribution,
+                              Tier2b2_threshold,
+                              Tier2b2_contribution,
+                              Tier2b3_threshold,
+                              Tier2b3_contribution,
+                              Tier2b4_threshold,
+                              Tier2b4_contribution,
+                              Tier3_threshold,
+                              Tier3_contribution,
                               Maximum_capacity) {
   time_steps <- length(input$Q_CA) #total period
   dt <- 1 # Time step is one month
@@ -117,8 +131,8 @@ WaterNetworkModel <- function(input,
     
     # Update Colorado available water
     Q_CO <- max(Q_COUP_vec[t] - W_COUP + spill_COUP, 0)
-  
-
+    
+    
     
     # ================================
     # ===========Rio Grande===========
@@ -151,7 +165,8 @@ WaterNetworkModel <- function(input,
     # ================================    
     
     # Steady inflow from CO to HE (Divide Average annual diversion water to the Rio Grande Basin by 12)
-    Q_COHE <- 0.009230542
+    Q_COHE <- 0.007102789
+
     
     # Steady inflow from CO to HE
     state$V_HE <- state$V_HE + Q_COHE
@@ -224,9 +239,32 @@ WaterNetworkModel <- function(input,
     # Requested import from Colorado
     Q_COCA_needed <- max(total_CA_demand - available_CA, 0)
     
-    # Actual volume received from Colorado
-    if (Q_CO >= Q_COCA_needed) {
-      Q_COCA <- Q_COCA_needed
+    
+    # ================================
+    # =========Q_COCA adjustment======
+    # ================================
+    
+    if (state$V_COLOW >= Tier1_threshold$CA) {
+      Q_COCA_effective <- Q_COCA_needed
+    } else if (state$V_COLOW >= Tier2a_threshold$CA) {
+      Q_COCA_effective <- max(Q_COCA_needed - Tier1_contribution$CA, 0)
+    } else if (state$V_COLOW >= Tier2b1_threshold$CA) {
+      Q_COCA_effective <- max(Q_COCA_needed - Tier2a_contribution$CA, 0)
+    } else if (state$V_COLOW >= Tier2b2_threshold$CA) {
+      Q_COCA_effective <- max(Q_COCA_needed - Tier2b1_contribution$CA, 0)
+    } else if (state$V_COLOW >= Tier2b3_threshold$CA) {
+      Q_COCA_effective <- max(Q_COCA_needed - Tier2b2_contribution$CA, 0)
+    } else if (state$V_COLOW >= Tier2b4_threshold$CA) {
+      Q_COCA_effective <- max(Q_COCA_needed - Tier2b3_contribution$CA, 0)
+    } else if (state$V_COLOW >= Tier3_threshold$CA) {
+      Q_COCA_effective <- max(Q_COCA_needed - Tier2b4_contribution$CA, 0)
+    } else {
+      Q_COCA_effective <- max(Q_COCA_needed - Tier3_contribution$CA, 0)
+    }
+    
+    # Allocate actual volume from Colorado
+    if (Q_CO >= Q_COCA_effective) {
+      Q_COCA <- Q_COCA_effective
     } else {
       Q_COCA <- Q_CO
     }
@@ -237,25 +275,18 @@ WaterNetworkModel <- function(input,
     # Total available water in CA
     total_available_CA <- available_CA + Q_COCA
     
-    # Determine withdrawal amount
+    # Withdrawal logic (same as before)
     if (total_available_CA > D_CA + Minimum_capacity$Minimum_capacity_CA) {
-      # Fully meet demand
       W_CA <- D_CA
     } else if (total_available_CA > Minimum_capacity$Minimum_capacity_CA) {
-      # Partially meet demand
       W_CA <- total_available_CA - Minimum_capacity$Minimum_capacity_CA
     } else {
-      # Not enough water to withdraw
       W_CA <- 0
     }
     
-    # Update storage volume
+    # Update CA storage
     state$V_CA <- total_available_CA - W_CA
-    
-    # Cap storage at maximum capacity
-    if (state$V_CA > Maximum_capacity$Maximum_capacity_CA) {
-      state$V_CA <- Maximum_capacity$Maximum_capacity_CA
-    }
+    state$V_CA <- min(state$V_CA, Maximum_capacity$Maximum_capacity_CA)
     
     # Calculate shortage
     Shortage_CA <- max(D_CA - W_CA, 0)
@@ -264,7 +295,7 @@ WaterNetworkModel <- function(input,
     # ================================
     # =========Colorado Lower=========
     # ================================
-
+    
     # update Q_CO to calculate COLOW
     
     Q_CO_vec[t] <- Q_CO
@@ -280,15 +311,26 @@ WaterNetworkModel <- function(input,
     available_COLOW <- state$V_COLOW + inflow_COLOW
     
     # Determine withdrawal amount
-    if (available_COLOW > D_COLOW + Minimum_capacity$Minimum_capacity_COLOW) {
-      # Fully meet demand
+    if (available_COLOW >= Tier1_threshold$COLOW) {
       W_COLOW <- D_COLOW
-    } else if (available_COLOW > Minimum_capacity$Minimum_capacity_COLOW) {
-      # Partially meet demand
-      W_COLOW <- available_COLOW - Minimum_capacity$Minimum_capacity_COLOW
+    } else if (available_COLOW >= Tier2a_threshold$COLOW) {
+      W_COLOW <- max(D_COLOW - Tier1_contribution$COLOW, 0)
+    } else if (available_COLOW >= Tier2b1_threshold$COLOW) {
+      W_COLOW <- max(D_COLOW - Tier2a_contribution$COLOW, 0)
+    } else if (available_COLOW >= Tier2b2_threshold$COLOW) {
+      W_COLOW <- max(D_COLOW - Tier2b1_contribution$COLOW, 0)
+    } else if (available_COLOW >= Tier2b3_threshold$COLOW) {
+      W_COLOW <- max(D_COLOW - Tier2b2_contribution$COLOW, 0)
+    } else if (available_COLOW >= Tier2b4_threshold$COLOW) {
+      W_COLOW <- max(D_COLOW - Tier2b3_contribution$COLOW, 0)
+    } else if (available_COLOW >= Tier3_threshold$COLOW) {
+      W_COLOW <- max(D_COLOW - Tier2b4_contribution$COLOW, 0)
     } else {
-      # Not enough water to withdraw
-      W_COLOW <- 0
+      if (available_COLOW > Minimum_capacity$Minimum_capacity_COLOW) {
+        W_COLOW <- available_COLOW - Minimum_capacity$Minimum_capacity_COLOW
+      } else {
+        W_COLOW <- 0
+      }
     }
     
     # Update storage volume
